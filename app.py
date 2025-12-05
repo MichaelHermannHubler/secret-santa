@@ -266,7 +266,7 @@ Hello {participant_name}!
 
 Your Secret Santa assignment has been made!
 
-You are gifting to: {giftee_name} ({giftee_email})
+You are gifting to: {giftee_name}
 
 Remember to keep this secret! 🎁
 

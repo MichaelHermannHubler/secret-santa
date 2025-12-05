@@ -27,7 +27,6 @@
             <div class="assignment-box">
                 <p><strong>You are gifting to:</strong></p>
                 <p class="giftee-name" id="gifteeName"></p>
-                <p class="giftee-email" id="gifteeEmail"></p>
             </div>
         </div>
 
@@ -54,7 +53,6 @@
                     messageDiv.textContent = '';
                     messageDiv.className = 'message';
                     document.getElementById('gifteeName').textContent = data.giftee_name;
-                    document.getElementById('gifteeEmail').textContent = data.giftee_email;
                     resultDiv.style.display = 'block';
                 } else {
                     messageDiv.textContent = data.message;
