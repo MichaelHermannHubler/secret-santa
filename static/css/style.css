@@ -172,3 +172,13 @@ a:hover {
     margin-bottom: 20px;
 }
 
+button[onclick="logout()"] {
+    background: #dc3545 !important;
+    padding: 8px 16px;
+    font-size: 14px;
+}
+
+button[onclick="logout()"]:hover {
+    background: #c82333 !important;
+}
+

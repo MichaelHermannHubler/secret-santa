@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for
+from flask import Flask, render_template, request, jsonify, redirect, url_for, session
 import json
 import os
 import random
@@ -6,8 +6,10 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
+import secrets
 
 app = Flask(__name__)
+app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(16))
 
 DATA_DIR = 'data'
 PARTICIPANTS_FILE = os.path.join(DATA_DIR, 'participants.json')
@@ -129,21 +131,41 @@ def check_assignment():
 @app.route('/admin')
 def admin():
     """Admin page for generating assignments"""
+    # Check if user is authenticated
+    if not session.get('admin_authenticated'):
+        return render_template('admin.html', authenticated=False)
+    
     participants = load_participants()
     assignments = load_assignments()
-    return render_template('admin.html', participants=participants, assignments=assignments)
+    return render_template('admin.html', authenticated=True, participants=participants, assignments=assignments)
+
+@app.route('/admin/login', methods=['POST'])
+def admin_login():
+    """Authenticate admin user"""
+    password = request.form.get('password', '').strip()
+    config = load_config()
+    
+    # Verify password
+    if password == config.get('admin_password', 'admin123'):
+        session['admin_authenticated'] = True
+        return jsonify({'success': True, 'message': 'Authentication successful'})
+    else:
+        return jsonify({'success': False, 'message': 'Invalid password'}), 401
+
+@app.route('/admin/logout', methods=['POST'])
+def admin_logout():
+    """Logout admin user"""
+    session.pop('admin_authenticated', None)
+    return jsonify({'success': True, 'message': 'Logged out successfully'})
 
 @app.route('/generate-assignments', methods=['POST'])
 def generate_assignments_web():
     """Generate assignments via web interface"""
-    password = request.form.get('password', '').strip()
+    # Check if user is authenticated
+    if not session.get('admin_authenticated'):
+        return jsonify({'success': False, 'message': 'Not authenticated. Please log in first.'}), 401
+    
     skip_email = request.form.get('skip_email', 'false') == 'true'
-    
-    config = load_config()
-    
-    # Verify password
-    if password != config.get('admin_password', 'admin123'):
-        return jsonify({'success': False, 'message': 'Invalid password'}), 401
     
     # Note: We allow regeneration even if assignments exist (user can use CLI for confirmation prompt)
     

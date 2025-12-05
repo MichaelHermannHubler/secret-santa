@@ -10,6 +10,28 @@
     <div class="container">
         <h1>🔐 Admin Panel</h1>
         
+        {% if not authenticated %}
+        <!-- Login Form -->
+        <div class="section">
+            <h2>Admin Login</h2>
+            <p>Please enter the admin password to access the admin panel.</p>
+            <form id="loginForm" onsubmit="login(event)">
+                <div class="form-group">
+                    <label for="password">Admin Password:</label>
+                    <input type="password" id="password" name="password" required autofocus>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+            <div id="loginMessage" class="message"></div>
+        </div>
+        {% else %}
+        <!-- Admin Panel Content -->
+        <div class="section">
+            <div style="text-align: right; margin-bottom: 20px;">
+                <button onclick="logout()" style="background: #dc3545;">Logout</button>
+            </div>
+        </div>
+        
         <div class="section">
             <h2>Generate Assignments</h2>
             <p>Use this form to generate Secret Santa assignments for all registered participants.</p>
@@ -21,10 +43,6 @@
             {% endif %}
             
             <form id="generateForm" onsubmit="generateAssignments(event)">
-                <div class="form-group">
-                    <label for="password">Admin Password:</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
                 <div class="form-group">
                     <label>
                         <input type="checkbox" id="skipEmail" name="skip_email" value="true">
@@ -59,6 +77,7 @@
             <p class="status">Assignments have been generated!</p>
         </div>
         {% endif %}
+        {% endif %}
 
         <div class="section">
             <p><a href="/">← Back to Home</a></p>
@@ -66,6 +85,56 @@
     </div>
 
     <script>
+        {% if not authenticated %}
+        function login(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const messageDiv = document.getElementById('loginMessage');
+            
+            messageDiv.textContent = 'Logging in...';
+            messageDiv.className = 'message';
+            messageDiv.style.display = 'block';
+            
+            fetch('/admin/login', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'message success';
+                    setTimeout(() => {
+                        location.reload();
+                    }, 500);
+                } else {
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'message error';
+                }
+            })
+            .catch(error => {
+                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.className = 'message error';
+            });
+        }
+        {% else %}
+        function logout() {
+            fetch('/admin/logout', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Logout error:', error);
+                location.reload();
+            });
+        }
+        
         function generateAssignments(event) {
             event.preventDefault();
             const form = event.target;
@@ -123,7 +192,7 @@
                 messageDiv.className = 'message error';
             });
         }
+        {% endif %}
     </script>
 </body>
 </html>
-
