@@ -8,6 +8,7 @@ on:
   workflow_dispatch:  # Allows manual triggering
 
 env:
+  DOCKERHUB_USERNAME: michaelhermannhubler
   IMAGE_NAME: secret-santa
 
 jobs:
