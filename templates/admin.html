@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Secret Santa Organizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Admin Panel</h1>
+        
+        <div class="section">
+            <h2>Generate Assignments</h2>
+            <p>Use this form to generate Secret Santa assignments for all registered participants.</p>
+            
+            {% if assignments %}
+            <div class="warning-box">
+                <strong>⚠️ Warning:</strong> Assignments already exist! Generating new assignments will overwrite existing ones.
+            </div>
+            {% endif %}
+            
+            <form id="generateForm" onsubmit="generateAssignments(event)">
+                <div class="form-group">
+                    <label for="password">Admin Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="skipEmail" name="skip_email" value="true">
+                        Skip sending email notifications
+                    </label>
+                </div>
+                <button type="submit">Generate Assignments</button>
+            </form>
+            <div id="generateMessage" class="message"></div>
+            <div id="emailResults" style="display: none; margin-top: 15px;"></div>
+        </div>
+
+        <div class="section">
+            <h2>Registered Participants</h2>
+            <div id="participantsList">
+                {% if participants %}
+                    <p><strong>Total: {{ participants|length }} participants</strong></p>
+                    <ul>
+                        {% for participant in participants %}
+                            <li>{{ participant.name }} ({{ participant.email }})</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="empty">No participants registered yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {% if assignments %}
+        <div class="section">
+            <h2>Current Assignments</h2>
+            <p class="status">Assignments have been generated!</p>
+        </div>
+        {% endif %}
+
+        <div class="section">
+            <p><a href="/">← Back to Home</a></p>
+        </div>
+    </div>
+
+    <script>
+        function generateAssignments(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const messageDiv = document.getElementById('generateMessage');
+            const skipEmail = document.getElementById('skipEmail').checked;
+            
+            // Add skip_email to form data
+            if (skipEmail) {
+                formData.set('skip_email', 'true');
+            }
+            
+            messageDiv.textContent = 'Generating assignments...';
+            messageDiv.className = 'message';
+            messageDiv.style.display = 'block';
+            
+            fetch('/generate-assignments', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'message success';
+                    
+                    const emailResultsDiv = document.getElementById('emailResults');
+                    if (data.email_results && data.email_results.length > 0) {
+                        let html = '<h3>Email Notifications:</h3><ul style="list-style: none; padding: 0;">';
+                        data.email_results.forEach(result => {
+                            if (result.success) {
+                                html += `<li style="color: #155724; padding: 5px 0;">✓ ${result.participant} (${result.email})</li>`;
+                            } else {
+                                html += `<li style="color: #721c24; padding: 5px 0;">✗ ${result.participant}: ${result.message}</li>`;
+                            }
+                        });
+                        html += '</ul>';
+                        emailResultsDiv.innerHTML = html;
+                        emailResultsDiv.style.display = 'block';
+                    } else {
+                        emailResultsDiv.style.display = 'none';
+                    }
+                    
+                    setTimeout(() => {
+                        location.reload();
+                    }, 5000);
+                } else {
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'message error';
+                    document.getElementById('emailResults').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.className = 'message error';
+            });
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa Organizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🎅 Secret Santa Organizer</h1>
+        
+        <div class="section">
+            <h2>Register for Secret Santa</h2>
+            <form id="registerForm" onsubmit="registerParticipant(event)">
+                <div class="form-group">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <button type="submit">Register</button>
+            </form>
+            <div id="registerMessage" class="message"></div>
+        </div>
+
+        <div class="section">
+            <h2>Registered Participants</h2>
+            <div id="participantsList">
+                {% if participants %}
+                    <ul>
+                        {% for participant in participants %}
+                            <li>{{ participant.name }}</li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="empty">No participants registered yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Check Your Assignment</h2>
+            <p><a href="/my-assignment">Click here to view your Secret Santa assignment</a></p>
+        </div>
+
+        <div class="section">
+            <h2>Admin</h2>
+            <p><a href="/admin">Admin Panel - Generate Assignments</a></p>
+        </div>
+
+        {% if assignments %}
+        <div class="section">
+            <h2>Status</h2>
+            <p class="status">Assignments have been made! Check your email or use the link above to view your assignment.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        function registerParticipant(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const messageDiv = document.getElementById('registerMessage');
+            
+            fetch('/register', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'message success';
+                    form.reset();
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'message error';
+                }
+            })
+            .catch(error => {
+                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.className = 'message error';
+            });
+        }
+    </script>
+</body>
+</html>
+

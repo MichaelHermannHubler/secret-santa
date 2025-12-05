@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Secret Santa Assignment</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>🎁 My Secret Santa Assignment</h1>
+        
+        <div class="section">
+            <p>Enter your email to view your Secret Santa assignment:</p>
+            <form id="checkForm" onsubmit="checkAssignment(event)">
+                <div class="form-group">
+                    <label for="email">Your Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <button type="submit">View Assignment</button>
+            </form>
+            <div id="assignmentMessage" class="message"></div>
+        </div>
+
+        <div id="assignmentResult" class="section" style="display: none;">
+            <h2>Your Assignment</h2>
+            <div class="assignment-box">
+                <p><strong>You are gifting to:</strong></p>
+                <p class="giftee-name" id="gifteeName"></p>
+                <p class="giftee-email" id="gifteeEmail"></p>
+            </div>
+        </div>
+
+        <div class="section">
+            <p><a href="/">← Back to Home</a></p>
+        </div>
+    </div>
+
+    <script>
+        function checkAssignment(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const messageDiv = document.getElementById('assignmentMessage');
+            const resultDiv = document.getElementById('assignmentResult');
+            
+            fetch('/check-assignment', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageDiv.textContent = '';
+                    messageDiv.className = 'message';
+                    document.getElementById('gifteeName').textContent = data.giftee_name;
+                    document.getElementById('gifteeEmail').textContent = data.giftee_email;
+                    resultDiv.style.display = 'block';
+                } else {
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'message error';
+                    resultDiv.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.className = 'message error';
+                resultDiv.style.display = 'none';
+            });
+        }
+    </script>
+</body>
+</html>
+
