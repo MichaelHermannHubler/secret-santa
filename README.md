@@ -2,6 +2,10 @@
 
 A Docker-based web application for organizing Secret Santa gift exchanges.
 
+**Available on Docker Hub:** `docker pull michaelhermannhubler/secret-santa`
+
+*This project was created using AI assistance.*
+
 ## Features
 
 - **Web Registration**: Participants can register their name and email through a simple web interface
@@ -13,7 +17,14 @@ A Docker-based web application for organizing Secret Santa gift exchanges.
 
 ## Quick Start
 
-### 1. Build and Run the Docker Container
+### Option 1: Pull from Docker Hub (Recommended)
+
+```bash
+docker pull michaelhermannhubler/secret-santa:latest
+docker run -d -p 5000:5000 -v $(pwd)/data:/app/data michaelhermannhubler/secret-santa:latest
+```
+
+### Option 2: Build from Source
 
 ```bash
 docker build -t secret-santa .
@@ -132,6 +143,55 @@ All data is stored in JSON files in the `data/` directory:
 ### Port Already in Use
 
 Change the port mapping: `docker run -d -p 8080:5000 ...` and access at `http://localhost:8080`
+
+## Pushing to Docker Hub
+
+To push this image to Docker Hub:
+
+### 1. Create a Docker Hub Account
+
+If you don't have one, create an account at [hub.docker.com](https://hub.docker.com)
+
+### 2. Login to Docker Hub
+
+```bash
+docker login
+```
+
+Enter your Docker Hub username and password when prompted.
+
+### 3. Tag the Image
+
+Tag your image with your Docker Hub username:
+
+```bash
+docker build -t secret-santa .
+docker tag secret-santa michaelhermannhubler/secret-santa:latest
+```
+
+### 4. Push the Image
+
+```bash
+docker push michaelhermannhubler/secret-santa:latest
+```
+
+### 5. Using the Image from Docker Hub
+
+Others (or you) can now pull and run the image:
+
+```bash
+docker pull michaelhermannhubler/secret-santa:latest
+docker run -d -p 5000:5000 -v $(pwd)/data:/app/data michaelhermannhubler/secret-santa:latest
+```
+
+### Optional: Tag with Version Numbers
+
+You can also tag with version numbers:
+
+```bash
+docker tag secret-santa michaelhermannhubler/secret-santa:1.0.0
+docker push michaelhermannhubler/secret-santa:1.0.0
+```
 
 ## License
 
