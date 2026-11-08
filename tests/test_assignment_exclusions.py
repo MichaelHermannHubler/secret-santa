@@ -133,6 +133,60 @@ class AssignmentExclusionTests(unittest.TestCase):
         self.assertFalse(any(person['email'] == 'eve@example.com'
                              for person in secret_santa.load_participants()))
 
+    def test_removing_participant_clears_assignments_and_their_exclusions(self):
+        secret_santa.save_config({
+            'admin_password': 'test-password',
+            'assignment_exclusions': [
+                ['alice@example.com', 'bob@example.com'],
+                ['bob@example.com', 'carol@example.com'],
+                ['dave@example.com', 'alice@example.com'],
+            ],
+        })
+        secret_santa.save_assignments({
+            'alice@example.com': {'giftee_email': 'bob@example.com'},
+            'bob@example.com': {'giftee_email': 'carol@example.com'},
+        })
+
+        with self.client.session_transaction() as session:
+            session['admin_authenticated'] = True
+        response = self.client.post('/admin/participants/remove', json={
+            'email': 'bob@example.com'
+        })
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            [person['email'] for person in secret_santa.load_participants()],
+            ['alice@example.com', 'carol@example.com', 'dave@example.com']
+        )
+        self.assertEqual(
+            secret_santa.load_config()['assignment_exclusions'],
+            [['dave@example.com', 'alice@example.com']]
+        )
+        self.assertEqual(secret_santa.load_assignments(), {})
+
+    def test_removing_participant_requires_admin_authentication(self):
+        response = self.client.post('/admin/participants/remove', json={
+            'email': 'alice@example.com'
+        })
+
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(len(secret_santa.load_participants()), 4)
+
+    def test_removing_unknown_participant_does_not_change_data(self):
+        response = self.client.post('/admin/participants/remove', json={
+            'email': 'unknown@example.com'
+        })
+
+        self.assertEqual(response.status_code, 401)
+        with self.client.session_transaction() as session:
+            session['admin_authenticated'] = True
+        response = self.client.post('/admin/participants/remove', json={
+            'email': 'unknown@example.com'
+        })
+
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(len(secret_santa.load_participants()), 4)
+
 
 if __name__ == '__main__':
     unittest.main()

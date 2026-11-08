@@ -60,15 +60,24 @@
             <div id="participantsList">
                 {% if participants %}
                     <p><strong>Total: {{ participants|length }} participants</strong></p>
+                    <p class="warning-box">Removing a participant clears the current assignments. Generate new assignments afterward.</p>
                     <ul>
                         {% for participant in participants %}
-                            <li>{{ participant.name }} ({{ participant.email }})</li>
+                            <li>
+                                {{ participant.name }} ({{ participant.email }})
+                                <button type="button" class="remove-participant"
+                                        data-email="{{ participant.email }}"
+                                        style="background: #dc3545; padding: 6px 12px; font-size: 14px;">
+                                    Remove
+                                </button>
+                            </li>
                         {% endfor %}
                     </ul>
                 {% else %}
                     <p class="empty">No participants registered yet.</p>
                 {% endif %}
             </div>
+            <div id="participantMessage" class="message"></div>
         </div>
 
         {% if assignments %}
@@ -119,6 +128,37 @@
             });
         }
         {% else %}
+        document.querySelectorAll('.remove-participant').forEach(button => {
+            button.addEventListener('click', async () => {
+                if (!confirm(`Remove ${button.dataset.email}? This will clear current assignments.`)) {
+                    return;
+                }
+
+                const messageDiv = document.getElementById('participantMessage');
+                messageDiv.textContent = 'Removing participant...';
+                messageDiv.className = 'message';
+                messageDiv.style.display = 'block';
+
+                try {
+                    const response = await fetch('/admin/participants/remove', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email: button.dataset.email })
+                    });
+                    const data = await response.json();
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.message || 'Could not remove participant.');
+                    }
+                    messageDiv.textContent = data.message;
+                    messageDiv.className = 'message success';
+                    setTimeout(() => location.reload(), 1200);
+                } catch (error) {
+                    messageDiv.textContent = error.message || 'An error occurred. Please try again.';
+                    messageDiv.className = 'message error';
+                }
+            });
+        });
+
         function logout() {
             fetch('/admin/logout', {
                 method: 'POST'

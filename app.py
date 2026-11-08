@@ -289,6 +289,52 @@ def admin_logout():
     session.pop('admin_authenticated', None)
     return jsonify({'success': True, 'message': 'Logged out successfully'})
 
+@app.route('/admin/participants/remove', methods=['POST'])
+def remove_participant():
+    """Remove a registered participant and reset assignments."""
+    if not session.get('admin_authenticated'):
+        return jsonify({'success': False, 'message': 'Not authenticated. Please log in first.'}), 401
+
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({'success': False, 'message': 'Invalid request'}), 400
+
+    email = data.get('email')
+    if not isinstance(email, str) or not email.strip():
+        return jsonify({'success': False, 'message': 'A participant email is required'}), 400
+    email = email.strip().lower()
+
+    participants = load_participants()
+    if not any(participant['email'] == email for participant in participants):
+        return jsonify({'success': False, 'message': 'Participant not found'}), 404
+
+    remaining_participants = [
+        participant for participant in participants if participant['email'] != email
+    ]
+    config = load_config()
+    exclusion_pairs = normalize_exclusion_pairs(
+        config.get('assignment_exclusions', []),
+        [participant['email'] for participant in participants],
+        ignore_missing=True
+    )
+    config['assignment_exclusions'] = [
+        [giver_email, giftee_email]
+        for giver_email, giftee_email in exclusion_pairs
+        if email not in (giver_email, giftee_email)
+    ]
+
+    save_participants(remaining_participants)
+    save_config(config)
+
+    # Existing assignments may include the removed participant or no longer fit
+    # the current participant list, so require a fresh draw.
+    save_assignments({})
+
+    return jsonify({
+        'success': True,
+        'message': 'Participant removed. Generate assignments again to notify the remaining participants.'
+    })
+
 @app.route('/generate-assignments', methods=['POST'])
 def generate_assignments_web():
     """Generate assignments via web interface"""

@@ -11,6 +11,7 @@ A Docker-based web application for organizing Secret Santa gift exchanges.
 - **Web Registration**: Participants can register their name and email through a simple web interface
 - **Random Assignment**: Generate random Secret Santa assignments via web interface or CLI command
 - **Assignment Exclusions**: Participants can set one-way exclusions during registration or update them from the assignment page
+- **Participant Management**: Admins can remove registered participants; existing assignments are cleared and must be generated again
 - **Email Notifications**: Automatically send assignment emails to all participants
 - **Assignment Viewing**: Participants can view their assignments on the website
 - **Data Persistence**: All data is stored in JSON files and persists across container restarts
@@ -110,6 +111,7 @@ secret-santa/
 - `POST /check-assignment` - Check assignment by email
 - `POST /participant/exclusions` - Read or update a participant's own directed exclusions
 - `GET /admin` - Admin panel for generating assignments
+- `POST /admin/participants/remove` - Remove a participant and clear assignments (requires admin authentication)
 - `POST /generate-assignments` - Generate assignments via web interface (requires admin password)
 
 ## Data Storage
