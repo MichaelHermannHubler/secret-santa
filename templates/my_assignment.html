@@ -22,6 +22,33 @@
             <div id="assignmentMessage" class="message"></div>
         </div>
 
+        <div class="section">
+            <h2>Manage Assignment Exclusions</h2>
+            <p>Enter your registered email to choose who you should not draw. These exclusions are one-way and apply the next time assignments are generated.</p>
+            <form id="exclusionLookupForm" onsubmit="loadExclusions(event)">
+                <div class="form-group">
+                    <label for="exclusionEmail">Your registered email:</label>
+                    <input type="email" id="exclusionEmail" required>
+                </div>
+                <button type="submit">Load My Preferences</button>
+            </form>
+            <div id="exclusionEditor" style="display: none;">
+                <form id="exclusionForm" onsubmit="saveExclusions(event)">
+                    <div class="form-group">
+                        <label>People you do not want to be assigned:</label>
+                        {% for name in participant_names %}
+                        <label data-participant-index="{{ loop.index0 }}">
+                            <input type="checkbox" name="excluded_indices" value="{{ loop.index0 }}">
+                            {{ name }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                    <button type="submit">Save Preferences</button>
+                </form>
+            </div>
+            <div id="exclusionMessage" class="message"></div>
+        </div>
+
         <div id="assignmentResult" class="section" style="display: none;">
             <h2>Your Assignment</h2>
             <div class="assignment-box">
@@ -36,6 +63,75 @@
     </div>
 
     <script>
+        let participantEmail = '';
+
+        async function loadExclusions(event) {
+            event.preventDefault();
+            participantEmail = document.getElementById('exclusionEmail').value.trim().toLowerCase();
+            const messageDiv = document.getElementById('exclusionMessage');
+            messageDiv.textContent = 'Loading preferences...';
+            messageDiv.className = 'message';
+            messageDiv.style.display = 'block';
+
+            try {
+                const response = await fetch('/participant/exclusions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: participantEmail })
+                });
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Could not load preferences.');
+                }
+
+                document.querySelectorAll('#exclusionForm [data-participant-index]').forEach(label => {
+                    const index = Number(label.dataset.participantIndex);
+                    const checkbox = label.querySelector('input');
+                    label.hidden = index === data.participant_index;
+                    checkbox.checked = data.excluded_indices.includes(index);
+                });
+                document.getElementById('exclusionEditor').style.display = 'block';
+                messageDiv.textContent = '';
+                messageDiv.className = 'message';
+            } catch (error) {
+                document.getElementById('exclusionEditor').style.display = 'none';
+                messageDiv.textContent = error.message || 'An error occurred. Please try again.';
+                messageDiv.className = 'message error';
+            }
+        }
+
+        async function saveExclusions(event) {
+            event.preventDefault();
+            const messageDiv = document.getElementById('exclusionMessage');
+            const excludedIndices = Array.from(
+                document.querySelectorAll('#exclusionForm input[name="excluded_indices"]:checked'),
+                checkbox => Number(checkbox.value)
+            );
+            messageDiv.textContent = 'Saving preferences...';
+            messageDiv.className = 'message';
+            messageDiv.style.display = 'block';
+
+            try {
+                const response = await fetch('/participant/exclusions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: participantEmail,
+                        excluded_indices: excludedIndices
+                    })
+                });
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || 'Could not save preferences.');
+                }
+                messageDiv.textContent = data.message;
+                messageDiv.className = 'message success';
+            } catch (error) {
+                messageDiv.textContent = error.message || 'An error occurred. Please try again.';
+                messageDiv.className = 'message error';
+            }
+        }
+
         function checkAssignment(event) {
             event.preventDefault();
             const form = event.target;
@@ -69,4 +165,3 @@
     </script>
 </body>
 </html>
-

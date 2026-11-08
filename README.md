@@ -10,6 +10,7 @@ A Docker-based web application for organizing Secret Santa gift exchanges.
 
 - **Web Registration**: Participants can register their name and email through a simple web interface
 - **Random Assignment**: Generate random Secret Santa assignments via web interface or CLI command
+- **Assignment Exclusions**: Participants can set one-way exclusions during registration or update them from the assignment page
 - **Email Notifications**: Automatically send assignment emails to all participants
 - **Assignment Viewing**: Participants can view their assignments on the website
 - **Data Persistence**: All data is stored in JSON files and persists across container restarts
@@ -37,7 +38,7 @@ Open your browser and go to: `http://localhost:5000`
 
 ### 3. Register Participants
 
-Participants can register by entering their name and email on the homepage.
+Participants can register by entering their name and email on the homepage. During registration they can choose who they should not draw; they can update these one-way preferences later from "My Assignment".
 
 ### 4. Configure Email (Optional)
 
@@ -107,6 +108,7 @@ secret-santa/
 - `POST /register` - Register a new participant
 - `GET /my-assignment` - Page to check your assignment
 - `POST /check-assignment` - Check assignment by email
+- `POST /participant/exclusions` - Read or update a participant's own directed exclusions
 - `GET /admin` - Admin panel for generating assignments
 - `POST /generate-assignments` - Generate assignments via web interface (requires admin password)
 
@@ -116,7 +118,7 @@ All data is stored in JSON files in the `data/` directory:
 
 - `participants.json` - List of registered participants
 - `assignments.json` - Generated assignments (email → giftee mapping)
-- `config.json` - Configuration (SMTP settings, admin password)
+- `config.json` - Configuration (SMTP settings, admin password, and participant assignment exclusions)
 
 ## Security Features
 
@@ -147,4 +149,3 @@ Change the port mapping: `docker run -d -p 8080:5000 ...` and access at `http://
 ## License
 
 MIT License
-

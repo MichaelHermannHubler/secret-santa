@@ -21,6 +21,18 @@
                     <label for="email">Email:</label>
                     <input type="email" id="email" name="email" required>
                 </div>
+                {% if participants %}
+                <div class="form-group">
+                    <label>People you do not want to be assigned:</label>
+                    <p>Select any participants you should not draw. This preference is one-way.</p>
+                    {% for participant in participants %}
+                    <label>
+                        <input type="checkbox" name="excluded_indices" value="{{ loop.index0 }}">
+                        {{ participant.name }}
+                    </label>
+                    {% endfor %}
+                </div>
+                {% endif %}
                 <button type="submit">Register</button>
             </form>
             <div id="registerMessage" class="message"></div>
@@ -44,6 +56,7 @@
         <div class="section">
             <h2>Check Your Assignment</h2>
             <p><a href="/my-assignment">Click here to view your Secret Santa assignment</a></p>
+            <p>You can also update your assignment exclusions from that page.</p>
         </div>
 
         <div class="section">
@@ -92,4 +105,3 @@
     </script>
 </body>
 </html>
-

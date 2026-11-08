@@ -61,6 +61,48 @@ def save_config(config):
     with open(CONFIG_FILE, 'w') as f:
         json.dump(config, f, indent=2)
 
+def normalize_exclusion_pairs(pairs, participant_emails, ignore_missing=False):
+    """Validate and normalize directed assignment exclusions."""
+    if not isinstance(pairs, list):
+        raise ValueError('Assignment exclusions must be a list')
+
+    participant_emails = set(participant_emails)
+    normalized_pairs = set()
+    for pair in pairs:
+        if (not isinstance(pair, (list, tuple)) or len(pair) != 2 or
+                not all(isinstance(email, str) for email in pair)):
+            raise ValueError('Each assignment exclusion must contain two participant emails')
+        first_email, second_email = pair
+        if first_email == second_email:
+            raise ValueError('A participant cannot be excluded from themselves')
+        if first_email not in participant_emails or second_email not in participant_emails:
+            if ignore_missing:
+                continue
+            raise ValueError('Assignment exclusions must refer to registered participants')
+        normalized_pairs.add((first_email, second_email))
+
+    return sorted(normalized_pairs)
+
+def parse_participant_indices(raw_indices, participant_count, own_index=None):
+    """Validate participant indices submitted for one participant's exclusions."""
+    if not isinstance(raw_indices, list):
+        raise ValueError('Excluded participants must be provided as a list')
+
+    indices = set()
+    for raw_index in raw_indices:
+        if isinstance(raw_index, bool) or not isinstance(raw_index, (int, str)):
+            raise ValueError('Invalid excluded participant')
+        try:
+            index = int(raw_index)
+        except ValueError:
+            raise ValueError('Invalid excluded participant')
+        if index < 0 or index >= participant_count:
+            raise ValueError('Invalid excluded participant')
+        if index == own_index:
+            raise ValueError('You cannot exclude yourself')
+        indices.add(index)
+    return sorted(indices)
+
 @app.route('/')
 def index():
     """Home page with registration form"""
@@ -82,10 +124,17 @@ def register():
         return jsonify({'success': False, 'message': 'Invalid email format'}), 400
     
     participants = load_participants()
-    
     # Check for duplicate email
     if any(p['email'] == email for p in participants):
         return jsonify({'success': False, 'message': 'This email is already registered'}), 400
+
+    try:
+        excluded_indices = parse_participant_indices(
+            request.form.getlist('excluded_indices'),
+            len(participants)
+        )
+    except ValueError as error:
+        return jsonify({'success': False, 'message': str(error)}), 400
     
     # Add new participant
     participants.append({
@@ -93,14 +142,96 @@ def register():
         'email': email,
         'registered_at': datetime.now().isoformat()
     })
+
+    config = load_config()
+    try:
+        exclusion_pairs = normalize_exclusion_pairs(
+            config.get('assignment_exclusions', []),
+            [participant['email'] for participant in participants],
+            ignore_missing=True
+        )
+        exclusion_pairs.extend(
+            (email, participants[index]['email'])
+            for index in excluded_indices
+        )
+        config['assignment_exclusions'] = normalize_exclusion_pairs(
+            exclusion_pairs,
+            [participant['email'] for participant in participants]
+        )
+    except ValueError as error:
+        return jsonify({'success': False, 'message': f'Could not save exclusions: {error}'}), 500
+
     save_participants(participants)
+    save_config(config)
     
     return jsonify({'success': True, 'message': 'Successfully registered!'})
 
 @app.route('/my-assignment')
 def my_assignment():
     """Page to view your assignment"""
-    return render_template('my_assignment.html')
+    participants = load_participants()
+    return render_template(
+        'my_assignment.html',
+        participant_names=[participant['name'] for participant in participants]
+    )
+
+@app.route('/participant/exclusions', methods=['POST'])
+def manage_participant_exclusions():
+    """Read or update the directed exclusions belonging to a participant."""
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({'success': False, 'message': 'Invalid request'}), 400
+
+    email = data.get('email')
+    if not isinstance(email, str) or not email.strip():
+        return jsonify({'success': False, 'message': 'A registered email is required'}), 400
+    email = email.strip().lower()
+    participants = load_participants()
+    participant_index = next(
+        (index for index, participant in enumerate(participants)
+         if participant['email'] == email),
+        None
+    )
+    if participant_index is None:
+        return jsonify({'success': False, 'message': 'No participant found for this email'}), 404
+
+    config = load_config()
+    try:
+        exclusion_pairs = normalize_exclusion_pairs(
+            config.get('assignment_exclusions', []),
+            [participant['email'] for participant in participants],
+            ignore_missing=True
+        )
+        if 'excluded_indices' in data:
+            excluded_indices = parse_participant_indices(
+                data['excluded_indices'],
+                len(participants),
+                own_index=participant_index
+            )
+            exclusion_pairs = [
+                pair for pair in exclusion_pairs if pair[0] != email
+            ]
+            exclusion_pairs.extend(
+                (email, participants[index]['email'])
+                for index in excluded_indices
+            )
+            config['assignment_exclusions'] = normalize_exclusion_pairs(
+                exclusion_pairs,
+                [participant['email'] for participant in participants]
+            )
+            save_config(config)
+    except ValueError as error:
+        return jsonify({'success': False, 'message': str(error)}), 400
+
+    return jsonify({
+        'success': True,
+        'message': 'Your assignment exclusions have been saved.',
+        'participant_index': participant_index,
+        'excluded_indices': [
+            index for index, participant in enumerate(participants)
+            if (email, participant['email']) in exclusion_pairs
+        ]
+    })
 
 @app.route('/check-assignment', methods=['POST'])
 def check_assignment():
@@ -222,23 +353,53 @@ def generate_assignments():
     if len(participants) < 2:
         return False, 'Need at least 2 participants to generate assignments'
     
-    # Create a list of indices
-    indices = list(range(len(participants)))
-    
-    # Shuffle until no one is assigned to themselves
-    max_attempts = 100
-    for attempt in range(max_attempts):
-        random.shuffle(indices)
-        # Check if anyone is assigned to themselves
-        if all(i != indices[i] for i in range(len(indices))):
-            break
-    else:
-        return False, 'Could not generate valid assignments after multiple attempts'
-    
+    config = load_config()
+    try:
+        exclusion_pairs = normalize_exclusion_pairs(
+            config.get('assignment_exclusions', []),
+            [participant['email'] for participant in participants],
+            ignore_missing=True
+        )
+    except ValueError as error:
+        return False, f'Invalid assignment exclusions: {error}'
+
+    excluded_emails = {email: set() for email in (p['email'] for p in participants)}
+    for participant_email, excluded_email in exclusion_pairs:
+        excluded_emails[participant_email].add(excluded_email)
+
+    candidates = {}
+    for giver_index, participant in enumerate(participants):
+        candidates[giver_index] = [
+            recipient_index
+            for recipient_index, recipient in enumerate(participants)
+            if (recipient_index != giver_index and
+                    recipient['email'] not in excluded_emails[participant['email']])
+        ]
+        random.shuffle(candidates[giver_index])
+
+    giver_order = list(range(len(participants)))
+    random.shuffle(giver_order)
+    assigned_givers = {}
+
+    def find_recipient(giver_index, seen_recipients):
+        for recipient_index in candidates[giver_index]:
+            if recipient_index in seen_recipients:
+                continue
+            seen_recipients.add(recipient_index)
+            previous_giver = assigned_givers.get(recipient_index)
+            if previous_giver is None or find_recipient(previous_giver, seen_recipients):
+                assigned_givers[recipient_index] = giver_index
+                return True
+        return False
+
+    for giver_index in giver_order:
+        if not find_recipient(giver_index, set()):
+            return False, 'No valid assignments are possible with the current exclusions. Remove some exclusions and try again.'
+
     # Create assignments
     assignments = {}
-    for i, participant in enumerate(participants):
-        giftee_index = indices[i]
+    for giftee_index, giver_index in assigned_givers.items():
+        participant = participants[giver_index]
         giftee = participants[giftee_index]
         assignments[participant['email']] = {
             'giftee_email': giftee['email'],
@@ -287,4 +448,3 @@ Happy gifting!
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
-
