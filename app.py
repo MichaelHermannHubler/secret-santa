@@ -1,6 +1,6 @@
 from flask import (Flask, render_template, request, jsonify, redirect, url_for,
                    session, has_request_context)
-from flask_babel import Babel, force_locale, gettext as _, ngettext
+from flask_babel import Babel, force_locale, format_datetime, gettext as _, ngettext
 import json
 import os
 import random
@@ -361,7 +361,15 @@ def admin():
     
     participants = load_participants()
     assignments = load_assignments()
-    return render_template('admin.html', authenticated=True, participants=participants, assignments=assignments)
+    email_status = {}
+    for giver_email, assignment in assignments.items():
+        sent_at = assignment.get('email_sent_at')
+        email_status[giver_email] = {
+            'sent_at': format_datetime(datetime.fromisoformat(sent_at), 'short') if sent_at else None,
+            'error': assignment.get('email_error'),
+        }
+    return render_template('admin.html', authenticated=True, participants=participants,
+                           assignments=assignments, email_status=email_status)
 
 @app.route('/admin/login', methods=['POST'])
 def admin_login():
@@ -430,67 +438,131 @@ def remove_participant():
 
 @app.route('/generate-assignments', methods=['POST'])
 def generate_assignments_web():
-    """Generate assignments via web interface"""
-    # Check if user is authenticated
+    """Generate assignments via web interface. Emails are sent separately."""
     if not session.get('admin_authenticated'):
         return jsonify({'success': False, 'message': _('Not authenticated. Please log in first.')}), 401
-    
-    skip_email = request.form.get('skip_email', 'false') == 'true'
-    
-    # Note: We allow regeneration even if assignments exist (user can use CLI for confirmation prompt)
-    
-    # Generate assignments
+
     success, result = generate_assignments()
-    
     if not success:
         return jsonify({'success': False, 'message': result}), 400
-    
-    assignments = result
-    participants = load_participants()
-    email_results = []
-    
-    # Send email notifications if not skipped
-    if not skip_email:
-        config = load_config()
-        if config.get('email') and config.get('password'):
-            for participant in participants:
-                assignment = assignments.get(participant['email'])
-                if assignment:
-                    giftee = next((p for p in participants if p['email'] == assignment['giftee_email']), None)
-                    if giftee:
-                        success, message = send_email_notification(
-                            participant['email'],
-                            participant['name'],
-                            giftee['name'],
-                            giftee['email'],
-                            participant.get('language'),
-                            giftee_likes=giftee.get('likes', ''),
-                            giftee_dislikes=giftee.get('dislikes', '')
-                        )
-                        email_results.append({
-                            'participant': participant['name'],
-                            'email': participant['email'],
-                            'success': success,
-                            'message': message
-                        })
-        else:
-            email_results.append({
-                'participant': _('System'),
-                'email': '',
-                'success': False,
-                'message': _('Email configuration not set')
-            })
-    
+
     return jsonify({
         'success': True,
         'message': ngettext(
             'Successfully generated assignments for %(num)d participant!',
             'Successfully generated assignments for %(num)d participants!',
-            len(assignments)
+            len(result)
         ),
-        'email_results': email_results,
-        'skip_email': skip_email
     })
+
+@app.route('/admin/emails/send', methods=['POST'])
+def send_emails_web():
+    """Send (or resend) assignment emails to everyone, to those not yet notified, or to one person."""
+    if not session.get('admin_authenticated'):
+        return jsonify({'success': False, 'message': _('Not authenticated. Please log in first.')}), 401
+
+    data = request.get_json(silent=True)
+    if not isinstance(data, dict):
+        return jsonify({'success': False, 'message': _('Invalid request')}), 400
+
+    recipient = data.get('email')
+    if recipient is not None:
+        if not isinstance(recipient, str) or not recipient.strip():
+            return jsonify({'success': False, 'message': _('Invalid request')}), 400
+        recipient = recipient.strip().lower()
+    only_unsent = data.get('only_unsent') is True
+
+    try:
+        results = send_assignment_emails(
+            recipients=[recipient] if recipient else None,
+            only_unsent=only_unsent
+        )
+    except EmailSendError as error:
+        return jsonify({'success': False, 'message': str(error)}), error.status
+
+    if not results:
+        return jsonify({'success': True, 'message': _('Everyone has already been notified.'),
+                        'email_results': []})
+
+    sent = sum(1 for result in results if result['success'])
+    return jsonify({
+        'success': True,
+        'message': _('Emails sent: %(sent)d, failed: %(failed)d', sent=sent, failed=len(results) - sent),
+        'email_results': results,
+    })
+
+class EmailSendError(Exception):
+    """Sending could not start at all (as opposed to a single email failing)."""
+
+    def __init__(self, message, status=400):
+        super().__init__(message)
+        self.status = status
+
+def send_assignment_emails(recipients=None, only_unsent=False):
+    """Email givers their assignment and record the outcome in assignments.json.
+
+    ``recipients``: giver emails to notify; None means everyone with an assignment.
+    ``only_unsent``: skip givers whose email was already sent successfully.
+    Returns one result dict per attempted email. Raises EmailSendError when
+    nothing can be sent (no email config, no assignments, unknown recipient).
+    Must run inside an app or request context (see send_email_notification).
+    """
+    config = load_config()
+    if not config.get('email') or not config.get('password'):
+        raise EmailSendError(_('Email configuration not set'))
+
+    assignments = load_assignments()
+    if not assignments:
+        raise EmailSendError(_('No assignments yet. Generate assignments first.'))
+
+    if recipients is not None:
+        unknown = [email for email in recipients if email not in assignments]
+        if unknown:
+            raise EmailSendError(_('No assignment found for this email'), status=404)
+
+    participants = load_participants()
+    by_email = {participant['email']: participant for participant in participants}
+    results = []
+    for participant in participants:
+        giver_email = participant['email']
+        assignment = assignments.get(giver_email)
+        if assignment is None:
+            continue
+        if recipients is not None and giver_email not in recipients:
+            continue
+        if only_unsent and assignment.get('email_sent_at'):
+            continue
+
+        giftee = by_email.get(assignment['giftee_email'])
+        if giftee is None:
+            success, message = False, _('Assignment found but giftee not found')
+        else:
+            success, message = send_email_notification(
+                giver_email,
+                participant['name'],
+                giftee['name'],
+                giftee['email'],
+                participant.get('language'),
+                giftee_likes=giftee.get('likes', ''),
+                giftee_dislikes=giftee.get('dislikes', '')
+            )
+
+        if success:
+            assignment['email_sent_at'] = datetime.now().isoformat()
+            assignment.pop('email_error', None)
+        else:
+            # Keep an earlier successful send time: that email did arrive.
+            assignment['email_error'] = message
+        # Save after every email so an interrupted run keeps accurate status.
+        save_assignments(assignments)
+
+        results.append({
+            'participant': participant['name'],
+            'email': giver_email,
+            'success': success,
+            'message': message,
+        })
+    return results
 
 def generate_assignments():
     """Generate random Secret Santa assignments"""

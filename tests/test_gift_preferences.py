@@ -150,8 +150,9 @@ class GiftPreferenceTests(unittest.TestCase):
     def test_generated_emails_carry_giftee_wishes(self):
         with self.client.session_transaction() as session:
             session['admin_authenticated'] = True
+        self.assertEqual(self.client.post('/generate-assignments').status_code, 200)
         with patch('app.smtplib.SMTP') as smtp:
-            response = self.client.post('/generate-assignments')
+            response = self.client.post('/admin/emails/send', json={})
         self.assertEqual(response.status_code, 200)
 
         bodies = {

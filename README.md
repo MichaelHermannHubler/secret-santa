@@ -13,7 +13,7 @@ A Docker-based web application for organizing Secret Santa gift exchanges.
 - **Gift Wishes**: Participants can list things they like and things they would rather not get. Their Secret Santa sees these on the website and in the assignment email
 - **Assignment Exclusions**: Participants can set one-way exclusions during registration or update them from the assignment page
 - **Participant Management**: Admins can remove registered participants; existing assignments are cleared and must be generated again
-- **Email Notifications**: Automatically send assignment emails to all participants
+- **Email Notifications**: Send assignment emails as a separate step after the draw. Send to everyone, only to people not yet notified, or to one person; resend at any time. The admin panel shows who has been notified and which emails failed
 - **Assignment Viewing**: Participants can view their assignments on the website
 - **Multi-language**: English, German, Dutch and (just for fun) Denglisch. The language follows the browser setting and can be changed with the switcher at the top of each page. Emails are sent in the language each participant registered with
 - **Data Persistence**: All data is stored in JSON files and persists across container restarts
@@ -59,28 +59,35 @@ To enable email notifications, edit `data/config.json`:
 
 **Note**: For Gmail, you'll need to use an [App Password](https://support.google.com/accounts/answer/185833) instead of your regular password.
 
-### 5. Generate Assignments
+### 5. Generate Assignments and Send Emails
 
-Once all participants have registered, you can generate assignments in two ways:
+Once all participants have registered, draw the pairs and then send the emails. These are two separate steps, so you can send the emails whenever you are ready and resend them later.
 
 #### Option A: Via Web Interface (Recommended)
 
 1. Click on "Admin Panel - Generate Assignments" link on the homepage
 2. Enter the admin password (default: `admin123`)
-3. Optionally check "Skip sending email notifications" if you don't want emails sent
-4. Click "Generate Assignments"
+3. Click "Generate Assignments". No emails are sent yet
+4. In "Send Emails", click "Send to everyone not yet notified"
+
+The participant list shows each person's email status (sent, failed or not sent yet) with a button to send or resend to that person only. "Send to everyone not yet notified" retries just the ones that failed; "Resend to everyone" sends again to all.
 
 #### Option B: Via CLI Command
 
 ```bash
+# Draw the pairs and email everyone in one go
 docker exec <container-id> python assign.py --password admin123
-```
 
-Or if you want to skip email notifications:
-
-```bash
+# Draw the pairs only
 docker exec <container-id> python assign.py --password admin123 --skip-email
+
+# Send emails for the existing pairs (no new draw)
+docker exec <container-id> python assign.py --password admin123 --send-only
+docker exec <container-id> python assign.py --password admin123 --send-only --unsent-only
+docker exec <container-id> python assign.py --password admin123 --send-only --to alice@example.com
 ```
+
+The `--send-only` commands exit with status 1 if any email failed.
 
 **Important**: Change the default password (`admin123`) by editing `data/config.json` before generating assignments.
 
@@ -101,7 +108,7 @@ Translations live in `translations/<lang>/LC_MESSAGES/messages.po`.
 ```
 secret-santa/
 ├── app.py              # Flask application
-├── assign.py           # CLI script for generating assignments
+├── assign.py           # CLI script for generating assignments and sending emails
 ├── requirements.txt    # Python dependencies
 ├── Dockerfile          # Docker configuration
 ├── babel.cfg           # Translation string extraction config
@@ -129,14 +136,15 @@ secret-santa/
 - `GET /language/<code>` - Switch the interface language (`en`, `de`, `nl`, `en_DE`)
 - `GET /admin` - Admin panel for generating assignments
 - `POST /admin/participants/remove` - Remove a participant and clear assignments (requires admin authentication)
-- `POST /generate-assignments` - Generate assignments via web interface (requires admin password)
+- `POST /generate-assignments` - Generate assignments without sending emails (requires admin authentication)
+- `POST /admin/emails/send` - Send assignment emails: JSON `{}` for everyone, `{"only_unsent": true}` for those not yet notified, or `{"email": "..."}` for one person (requires admin authentication)
 
 ## Data Storage
 
 All data is stored in JSON files in the `data/` directory:
 
 - `participants.json` - List of registered participants
-- `assignments.json` - Generated assignments (email → giftee mapping)
+- `assignments.json` - Generated assignments (email → giftee mapping) and each person's email delivery status
 - `config.json` - Configuration (SMTP settings, admin password, and participant assignment exclusions)
 
 ## Security Features
@@ -153,7 +161,7 @@ All data is stored in JSON files in the `data/` directory:
 1. Check that `data/config.json` has correct SMTP settings
 2. For Gmail, ensure you're using an App Password, not your regular password
 3. Check container logs: `docker logs <container-id>`
-4. Use `--skip-email` flag to generate assignments without sending emails
+4. The admin panel shows the error for each failed email. Fix the settings, then click "Send to everyone not yet notified" (or run `assign.py --send-only --unsent-only`) to retry only those
 
 ### Assignments Already Exist
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: secret-santa VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-15 20:48+0100\n"
+"POT-Creation-Date: 2026-11-15 20:57+0100\n"
 "PO-Revision-Date: 2026-11-15 20:35+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -18,6 +18,10 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid "%(notified)d of %(total)d participants notified"
+msgstr "%(notified)d von %(total)d Teilnehmenden benachrichtigt"
 
 msgid "A participant cannot be excluded from themselves"
 msgstr "Niemand kann von sich selbst ausgeschlossen werden"
@@ -61,9 +65,6 @@ msgstr "Zuteilung gefunden, aber die beschenkte Person existiert nicht mehr"
 msgid "Assignments already exist! Generating new assignments will overwrite existing ones."
 msgstr "Es gibt bereits Zuteilungen! Neue Zuteilungen überschreiben die bestehenden."
 
-msgid "Assignments have been generated!"
-msgstr "Die Zuteilungen wurden erstellt!"
-
 msgid "Assignments have been made! Check your email or use the link above to view your assignment."
 msgstr "Die Zuteilungen stehen fest! Schau in dein E-Mail-Postfach oder nutze den Link oben, um deine Zuteilung zu sehen."
 
@@ -92,11 +93,11 @@ msgstr "Ausschlüsse konnten nicht gespeichert werden: %(error)s"
 msgid "Could not save preferences."
 msgstr "Einstellungen konnten nicht gespeichert werden."
 
-msgid "Current Assignments"
-msgstr "Aktuelle Zuteilungen"
-
 msgid "Each assignment exclusion must contain two participant emails"
 msgstr "Jeder Ausschluss muss zwei E-Mail-Adressen von Teilnehmenden enthalten"
+
+msgid "Each participant gets an email saying whom they are gifting to. You can also send or resend to a single person in the list below."
+msgstr "Alle Teilnehmenden bekommen eine E-Mail, wen sie beschenken. In der Liste unten kannst du auch an einzelne Personen senden oder erneut senden."
 
 msgid "Email Notifications:"
 msgstr "E-Mail-Benachrichtigungen:"
@@ -104,8 +105,19 @@ msgstr "E-Mail-Benachrichtigungen:"
 msgid "Email configuration not set"
 msgstr "E-Mail-Versand ist nicht konfiguriert"
 
+#, python-format
+msgid "Email failed: %(error)s"
+msgstr "E-Mail fehlgeschlagen: %(error)s"
+
 msgid "Email is required"
 msgstr "E-Mail-Adresse ist erforderlich"
+
+msgid "Email not sent yet"
+msgstr "E-Mail noch nicht gesendet"
+
+#, python-format
+msgid "Email sent %(time)s"
+msgstr "E-Mail gesendet am %(time)s"
 
 msgid "Email sent successfully"
 msgstr "E-Mail erfolgreich gesendet"
@@ -113,11 +125,18 @@ msgstr "E-Mail erfolgreich gesendet"
 msgid "Email:"
 msgstr "E-Mail:"
 
+#, python-format
+msgid "Emails sent: %(sent)d, failed: %(failed)d"
+msgstr "E-Mails gesendet: %(sent)d, fehlgeschlagen: %(failed)d"
+
 msgid "Enter your email to view your Secret Santa assignment:"
 msgstr "Gib deine E-Mail-Adresse ein, um zu sehen, wen du beschenkst:"
 
 msgid "Enter your registered email to update your gift wishes and choose who you should not draw. Exclusions are one-way and apply the next time assignments are generated."
 msgstr "Gib deine registrierte E-Mail-Adresse ein, um deine Geschenkwünsche zu ändern und festzulegen, wen du nicht ziehen möchtest. Ausschlüsse gelten nur in eine Richtung und werden bei der nächsten Auslosung berücksichtigt."
+
+msgid "Everyone has already been notified."
+msgstr "Alle wurden bereits benachrichtigt."
 
 msgid "Excluded participants must be provided as a list"
 msgstr "Ausgeschlossene Personen müssen als Liste angegeben werden"
@@ -208,6 +227,12 @@ msgstr "Für die Auslosung werden mindestens 2 Teilnehmende benötigt"
 msgid "No assignment found for this email"
 msgstr "Für diese E-Mail-Adresse wurde keine Zuteilung gefunden"
 
+msgid "No assignments yet. Generate assignments first."
+msgstr "Noch keine Zuteilungen. Erstelle zuerst die Zuteilungen."
+
+msgid "No emails are sent yet. You send them in the next step, when you are ready."
+msgstr "Dabei werden noch keine E-Mails verschickt. Das machst du im nächsten Schritt, wenn du so weit bist."
+
 msgid "No gift wishes entered yet. Check back later!"
 msgstr "Noch keine Geschenkwünsche eingetragen. Schau später noch einmal vorbei!"
 
@@ -273,6 +298,12 @@ msgstr "Wenn du eine Person entfernst, werden die aktuellen Zuteilungen gelösch
 msgid "Removing participant..."
 msgstr "Person wird entfernt …"
 
+msgid "Resend email"
+msgstr "Erneut senden"
+
+msgid "Resend to everyone"
+msgstr "An alle erneut senden"
+
 msgid "Save Preferences"
 msgstr "Einstellungen speichern"
 
@@ -285,8 +316,24 @@ msgstr "Wichtel-Organisator"
 msgid "Select any participants you should not draw. This preference is one-way."
 msgstr "Wähle die Personen aus, die du nicht ziehen möchtest. Das gilt nur in eine Richtung."
 
-msgid "Skip sending email notifications"
-msgstr "Keine E-Mail-Benachrichtigungen senden"
+msgid "Send Emails"
+msgstr "E-Mails senden"
+
+msgid "Send email"
+msgstr "E-Mail senden"
+
+msgid "Send the assignment email again to everyone, including people who already got it?"
+msgstr "Die Zuteilungs-E-Mail nochmal an alle senden, auch an die, die sie schon bekommen haben?"
+
+#, python-format
+msgid "Send the assignment email to %(email)s?"
+msgstr "Die Zuteilungs-E-Mail an %(email)s senden?"
+
+msgid "Send to everyone not yet notified"
+msgstr "An alle noch nicht Benachrichtigten senden"
+
+msgid "Sending emails..."
+msgstr "E-Mails werden gesendet …"
 
 msgid "Status"
 msgstr "Status"
@@ -299,9 +346,6 @@ msgstr[1] "Zuteilungen für %(num)d Personen erfolgreich erstellt!"
 
 msgid "Successfully registered!"
 msgstr "Erfolgreich angemeldet!"
-
-msgid "System"
-msgstr "System"
 
 msgid "The person who draws you will see this."
 msgstr "Das sieht die Person, die dich zieht."
