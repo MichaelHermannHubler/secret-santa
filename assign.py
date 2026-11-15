@@ -77,7 +77,9 @@ def main():
                             participant['name'],
                             giftee['name'],
                             giftee['email'],
-                            participant.get('language')
+                            participant.get('language'),
+                            giftee_likes=giftee.get('likes', ''),
+                            giftee_dislikes=giftee.get('dislikes', '')
                         )
                         if success:
                             success_count += 1

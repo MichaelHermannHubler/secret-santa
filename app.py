@@ -43,6 +43,7 @@ def inject_languages():
     return {
         'current_language': get_locale(),
         'supported_languages': SUPPORTED_LANGUAGES,
+        'max_preference_length': MAX_PREFERENCE_LENGTH,
     }
 
 DATA_DIR = 'data'
@@ -117,6 +118,31 @@ def normalize_exclusion_pairs(pairs, participant_emails, ignore_missing=False):
 
     return sorted(normalized_pairs)
 
+MAX_PREFERENCE_LENGTH = 500
+PREFERENCE_FIELDS = ('likes', 'dislikes')
+
+def parse_gift_preferences(source):
+    """Validate the optional free-text gift wishes ("likes" / "dislikes").
+
+    Only fields present in ``source`` are returned, so callers can do partial
+    updates. Values are stripped; an empty string clears the field.
+    """
+    preferences = {}
+    for field in PREFERENCE_FIELDS:
+        if field not in source:
+            continue
+        value = source.get(field)
+        if value is None:
+            value = ''
+        if not isinstance(value, str):
+            raise ValueError(_('Gift preferences must be text'))
+        value = value.strip()
+        if len(value) > MAX_PREFERENCE_LENGTH:
+            raise ValueError(_('Gift preferences can be at most %(max)d characters long',
+                               max=MAX_PREFERENCE_LENGTH))
+        preferences[field] = value
+    return preferences
+
 def parse_participant_indices(raw_indices, participant_count, own_index=None):
     """Validate participant indices submitted for one participant's exclusions."""
     if not isinstance(raw_indices, list):
@@ -180,6 +206,7 @@ def register():
             request.form.getlist('excluded_indices'),
             len(participants)
         )
+        preferences = parse_gift_preferences(request.form)
     except ValueError as error:
         return jsonify({'success': False, 'message': str(error)}), 400
     
@@ -188,6 +215,8 @@ def register():
         'name': name,
         'email': email,
         'language': get_locale(),
+        'likes': preferences.get('likes', ''),
+        'dislikes': preferences.get('dislikes', ''),
         'registered_at': datetime.now().isoformat()
     })
 
@@ -225,7 +254,7 @@ def my_assignment():
 
 @app.route('/participant/exclusions', methods=['POST'])
 def manage_participant_exclusions():
-    """Read or update the directed exclusions belonging to a participant."""
+    """Read or update a participant's preferences: directed exclusions and gift wishes."""
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
         return jsonify({'success': False, 'message': _('Invalid request')}), 400
@@ -243,11 +272,15 @@ def manage_participant_exclusions():
     if participant_index is None:
         return jsonify({'success': False, 'message': _('No participant found for this email')}), 404
 
+    participant = participants[participant_index]
     config = load_config()
     try:
+        # Validate everything before saving anything, so a bad field never
+        # leaves the exclusions and the wishes half-updated.
+        preferences = parse_gift_preferences(data)
         exclusion_pairs = normalize_exclusion_pairs(
             config.get('assignment_exclusions', []),
-            [participant['email'] for participant in participants],
+            [p['email'] for p in participants],
             ignore_missing=True
         )
         if 'excluded_indices' in data:
@@ -274,15 +307,17 @@ def manage_participant_exclusions():
     # Remember the language the participant currently uses for their emails.
     # This lets people who registered before i18n (no stored language) or who
     # changed language later pick it up just by visiting their preferences.
-    language = get_locale()
-    if participants[participant_index].get('language') != language:
-        participants[participant_index]['language'] = language
+    updated = dict(participant, language=get_locale(), **preferences)
+    if updated != participant:
+        participants[participant_index] = participant = updated
         save_participants(participants)
 
     return jsonify({
         'success': True,
-        'message': _('Your assignment exclusions have been saved.'),
+        'message': _('Your preferences have been saved.'),
         'participant_index': participant_index,
+        'likes': participant.get('likes', ''),
+        'dislikes': participant.get('dislikes', ''),
         'excluded_indices': [
             index for index, participant in enumerate(participants)
             if (email, participant['email']) in exclusion_pairs
@@ -312,7 +347,9 @@ def check_assignment():
     return jsonify({
         'success': True,
         'giftee_name': giftee['name'],
-        'giftee_email': giftee['email']
+        'giftee_email': giftee['email'],
+        'giftee_likes': giftee.get('likes', ''),
+        'giftee_dislikes': giftee.get('dislikes', '')
     })
 
 @app.route('/admin')
@@ -426,7 +463,9 @@ def generate_assignments_web():
                             participant['name'],
                             giftee['name'],
                             giftee['email'],
-                            participant.get('language')
+                            participant.get('language'),
+                            giftee_likes=giftee.get('likes', ''),
+                            giftee_dislikes=giftee.get('dislikes', '')
                         )
                         email_results.append({
                             'participant': participant['name'],
@@ -517,9 +556,10 @@ def generate_assignments():
     return True, assignments
 
 def send_email_notification(participant_email, participant_name, giftee_name, giftee_email,
-                            language=None):
+                            language=None, giftee_likes='', giftee_dislikes=''):
     """Send email notification to participant, in the language they registered with.
 
+    Includes the giftee's gift wishes as they are at draw time.
     Must run inside an app or request context, otherwise the text stays English.
     """
     config = load_config()
@@ -533,15 +573,23 @@ def send_email_notification(participant_email, participant_name, giftee_name, gi
     try:
         with force_locale(language):
             subject = _('Your Secret Santa Assignment!')
-            body = _(
+            sections = [_(
                 'Hello %(name)s!\n\n'
                 'Your Secret Santa assignment has been made!\n\n'
-                'You are gifting to: %(giftee)s\n\n'
-                'Remember to keep this secret! 🎁\n\n'
-                'Happy gifting!',
+                'You are gifting to: %(giftee)s',
                 name=participant_name,
                 giftee=giftee_name
-            )
+            )]
+            wishes = []
+            if giftee_likes:
+                wishes.append(_('They like: %(likes)s', likes=giftee_likes))
+            if giftee_dislikes:
+                wishes.append(_('Please avoid: %(dislikes)s', dislikes=giftee_dislikes))
+            if wishes:
+                wishes.append(_('Wishes can still change, so check the website for the latest version.'))
+                sections.append('\n'.join(wishes))
+            sections.append(_('Remember to keep this secret! 🎁\n\nHappy gifting!'))
+            body = '\n\n'.join(sections)
 
         msg = MIMEMultipart()
         msg['From'] = config['email']

@@ -24,8 +24,8 @@
         </div>
 
         <div class="section">
-            <h2>{{ _('Manage Assignment Exclusions') }}</h2>
-            <p>{{ _('Enter your registered email to choose who you should not draw. These exclusions are one-way and apply the next time assignments are generated.') }}</p>
+            <h2>{{ _('My Preferences') }}</h2>
+            <p>{{ _('Enter your registered email to update your gift wishes and choose who you should not draw. Exclusions are one-way and apply the next time assignments are generated.') }}</p>
             <form id="exclusionLookupForm" onsubmit="loadExclusions(event)">
                 <div class="form-group">
                     <label for="exclusionEmail">{{ _('Your registered email:') }}</label>
@@ -35,6 +35,17 @@
             </form>
             <div id="exclusionEditor" style="display: none;">
                 <form id="exclusionForm" onsubmit="saveExclusions(event)">
+                    <div class="form-group">
+                        <label for="pref-likes">{{ _('Things you like (optional):') }}</label>
+                        <textarea id="pref-likes" name="likes" maxlength="{{ max_preference_length }}" rows="3"
+                                  placeholder="{{ _('e.g. board games, dark chocolate, crime novels') }}"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="pref-dislikes">{{ _('Things you would rather not get (optional):') }}</label>
+                        <textarea id="pref-dislikes" name="dislikes" maxlength="{{ max_preference_length }}" rows="3"
+                                  placeholder="{{ _('e.g. scented candles, socks, anything with alcohol') }}"></textarea>
+                        <p class="hint">{{ _('The person who draws you will see this.') }}</p>
+                    </div>
                     <div class="form-group">
                         <label>{{ _('People you do not want to be assigned:') }}</label>
                         {% for name in participant_names %}
@@ -55,6 +66,17 @@
             <div class="assignment-box">
                 <p><strong>{{ _('You are gifting to:') }}</strong></p>
                 <p class="giftee-name" id="gifteeName"></p>
+                <div class="gift-wishes">
+                    <div id="gifteeLikesBlock" hidden>
+                        <strong>{{ _('They like:') }}</strong>
+                        <p id="gifteeLikes"></p>
+                    </div>
+                    <div id="gifteeDislikesBlock" hidden>
+                        <strong>{{ _('Please avoid:') }}</strong>
+                        <p id="gifteeDislikes"></p>
+                    </div>
+                    <p id="gifteeNoWishes" class="hint" hidden>{{ _('No gift wishes entered yet. Check back later!') }}</p>
+                </div>
             </div>
         </div>
 
@@ -99,6 +121,8 @@
                     label.hidden = index === data.participant_index;
                     checkbox.checked = data.excluded_indices.includes(index);
                 });
+                document.getElementById('pref-likes').value = data.likes || '';
+                document.getElementById('pref-dislikes').value = data.dislikes || '';
                 document.getElementById('exclusionEditor').style.display = 'block';
                 messageDiv.textContent = '';
                 messageDiv.className = 'message';
@@ -126,7 +150,9 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         email: participantEmail,
-                        excluded_indices: excludedIndices
+                        excluded_indices: excludedIndices,
+                        likes: document.getElementById('pref-likes').value,
+                        dislikes: document.getElementById('pref-dislikes').value
                     })
                 });
                 const data = await response.json();
@@ -139,6 +165,12 @@
                 messageDiv.textContent = error.message || T.genericError;
                 messageDiv.className = 'message error';
             }
+        }
+
+        function showWish(id, text) {
+            // textContent, not innerHTML: wishes are free text from participants.
+            document.getElementById(id).textContent = text || '';
+            document.getElementById(id + 'Block').hidden = !text;
         }
 
         function checkAssignment(event) {
@@ -158,6 +190,9 @@
                     messageDiv.textContent = '';
                     messageDiv.className = 'message';
                     document.getElementById('gifteeName').textContent = data.giftee_name;
+                    showWish('gifteeLikes', data.giftee_likes);
+                    showWish('gifteeDislikes', data.giftee_dislikes);
+                    document.getElementById('gifteeNoWishes').hidden = Boolean(data.giftee_likes || data.giftee_dislikes);
                     resultDiv.style.display = 'block';
                 } else {
                     messageDiv.textContent = data.message;

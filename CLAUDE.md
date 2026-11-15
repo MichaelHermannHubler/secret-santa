@@ -22,7 +22,7 @@ docker build -t secret-santa . && docker run -p 5000:5000 secret-santa  # produc
 
 ## Data model (`data/`, gitignored, root-owned when created by the container)
 
-- `participants.json`: list of `{name, email, language, registered_at}` (`language` is missing for people who registered before i18n; treat it as the default). Emails are lowercased and act as the primary key.
+- `participants.json`: list of `{name, email, language, likes, dislikes, registered_at}`. `language`, `likes` and `dislikes` are missing for people who registered before those features, so always read them with `.get()`. `likes`/`dislikes` are free-text gift wishes (max `MAX_PREFERENCE_LENGTH` = 500 chars, validated by `parse_gift_preferences`). Emails are lowercased and act as the primary key.
 - `assignments.json`: `{giver_email: {giftee_email, assigned_at}}`.
 - `config.json`: SMTP settings, `admin_password` (default `admin123`), and `assignment_exclusions`.
 
@@ -33,6 +33,10 @@ The UI and the API refer to participants by their **list index** (`excluded_indi
 ## Assignment algorithm
 
 `generate_assignments` builds the candidates for each giver (excluding self and that giver's exclusions), shuffles them, then runs augmenting-path bipartite matching (Kuhn's algorithm). The result is a random valid derangement, or it fails with "No valid assignments…". It can produce several short cycles (A↔B), which is intended. Tests make it deterministic with `patch('app.random.shuffle', lambda v: None)`.
+
+## Gift wishes
+
+Participants enter `likes`/`dislikes` at registration and edit them on `/my-assignment`. Despite its name, `/participant/exclusions` handles all preferences: exclusions, wishes and language. It validates every field before saving anything, and omitted fields are left unchanged. The giver sees the giftee's **current** wishes via `/check-assignment`; the email contains a snapshot from draw time. Wishes are user input: render them with `textContent` only.
 
 ## Translations (Flask-Babel; en, de, nl, en_DE)
 

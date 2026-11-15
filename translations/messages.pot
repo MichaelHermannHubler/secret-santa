@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: secret-santa VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-15 20:34+0100\n"
+"POT-Creation-Date: 2026-11-15 20:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -120,8 +120,9 @@ msgid "Enter your email to view your Secret Santa assignment:"
 msgstr ""
 
 msgid ""
-"Enter your registered email to choose who you should not draw. These "
-"exclusions are one-way and apply the next time assignments are generated."
+"Enter your registered email to update your gift wishes and choose who you"
+" should not draw. Exclusions are one-way and apply the next time "
+"assignments are generated."
 msgstr ""
 
 msgid "Excluded participants must be provided as a list"
@@ -138,16 +139,19 @@ msgid "Generating assignments..."
 msgstr ""
 
 #, python-format
+msgid "Gift preferences can be at most %(max)d characters long"
+msgstr ""
+
+msgid "Gift preferences must be text"
+msgstr ""
+
+#, python-format
 msgid ""
 "Hello %(name)s!\n"
 "\n"
 "Your Secret Santa assignment has been made!\n"
 "\n"
-"You are gifting to: %(giftee)s\n"
-"\n"
-"Remember to keep this secret! 🎁\n"
-"\n"
-"Happy gifting!"
+"You are gifting to: %(giftee)s"
 msgstr ""
 
 #, python-format
@@ -187,7 +191,7 @@ msgstr ""
 msgid "Logout"
 msgstr ""
 
-msgid "Manage Assignment Exclusions"
+msgid "My Preferences"
 msgstr ""
 
 msgid "My Secret Santa Assignment"
@@ -203,6 +207,9 @@ msgid "Need at least 2 participants to generate assignments"
 msgstr ""
 
 msgid "No assignment found for this email"
+msgstr ""
+
+msgid "No gift wishes entered yet. Check back later!"
 msgstr ""
 
 msgid "No participant found for this email"
@@ -230,6 +237,13 @@ msgstr ""
 msgid "People you do not want to be assigned:"
 msgstr ""
 
+msgid "Please avoid:"
+msgstr ""
+
+#, python-format
+msgid "Please avoid: %(dislikes)s"
+msgstr ""
+
 msgid "Please enter the admin password to access the admin panel."
 msgstr ""
 
@@ -240,6 +254,12 @@ msgid "Register for Secret Santa"
 msgstr ""
 
 msgid "Registered Participants"
+msgstr ""
+
+msgid ""
+"Remember to keep this secret! 🎁\n"
+"\n"
+"Happy gifting!"
 msgstr ""
 
 msgid "Remove"
@@ -287,6 +307,22 @@ msgstr ""
 msgid "System"
 msgstr ""
 
+msgid "The person who draws you will see this."
+msgstr ""
+
+msgid "They like:"
+msgstr ""
+
+#, python-format
+msgid "They like: %(likes)s"
+msgstr ""
+
+msgid "Things you like (optional):"
+msgstr ""
+
+msgid "Things you would rather not get (optional):"
+msgstr ""
+
 msgid "This email is already registered"
 msgstr ""
 
@@ -307,10 +343,13 @@ msgstr ""
 msgid "Warning:"
 msgstr ""
 
+msgid "Wishes can still change, so check the website for the latest version."
+msgstr ""
+
 msgid "You are gifting to:"
 msgstr ""
 
-msgid "You can also update your assignment exclusions from that page."
+msgid "You can also update your wishes and exclusions from that page."
 msgstr ""
 
 msgid "You cannot exclude yourself"
@@ -325,9 +364,15 @@ msgstr ""
 msgid "Your Secret Santa Assignment!"
 msgstr ""
 
-msgid "Your assignment exclusions have been saved."
+msgid "Your preferences have been saved."
 msgstr ""
 
 msgid "Your registered email:"
+msgstr ""
+
+msgid "e.g. board games, dark chocolate, crime novels"
+msgstr ""
+
+msgid "e.g. scented candles, socks, anything with alcohol"
 msgstr ""
 
