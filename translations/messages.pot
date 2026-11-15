@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: secret-santa VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-15 20:48+0100\n"
+"POT-Creation-Date: 2026-11-15 20:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,6 +17,10 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid "%(notified)d of %(total)d participants notified"
+msgstr ""
 
 msgid "A participant cannot be excluded from themselves"
 msgstr ""
@@ -62,9 +66,6 @@ msgid ""
 "existing ones."
 msgstr ""
 
-msgid "Assignments have been generated!"
-msgstr ""
-
 msgid ""
 "Assignments have been made! Check your email or use the link above to "
 "view your assignment."
@@ -95,10 +96,12 @@ msgstr ""
 msgid "Could not save preferences."
 msgstr ""
 
-msgid "Current Assignments"
+msgid "Each assignment exclusion must contain two participant emails"
 msgstr ""
 
-msgid "Each assignment exclusion must contain two participant emails"
+msgid ""
+"Each participant gets an email saying whom they are gifting to. You can "
+"also send or resend to a single person in the list below."
 msgstr ""
 
 msgid "Email Notifications:"
@@ -107,13 +110,28 @@ msgstr ""
 msgid "Email configuration not set"
 msgstr ""
 
+#, python-format
+msgid "Email failed: %(error)s"
+msgstr ""
+
 msgid "Email is required"
+msgstr ""
+
+msgid "Email not sent yet"
+msgstr ""
+
+#, python-format
+msgid "Email sent %(time)s"
 msgstr ""
 
 msgid "Email sent successfully"
 msgstr ""
 
 msgid "Email:"
+msgstr ""
+
+#, python-format
+msgid "Emails sent: %(sent)d, failed: %(failed)d"
 msgstr ""
 
 msgid "Enter your email to view your Secret Santa assignment:"
@@ -123,6 +141,9 @@ msgid ""
 "Enter your registered email to update your gift wishes and choose who you"
 " should not draw. Exclusions are one-way and apply the next time "
 "assignments are generated."
+msgstr ""
+
+msgid "Everyone has already been notified."
 msgstr ""
 
 msgid "Excluded participants must be provided as a list"
@@ -209,6 +230,14 @@ msgstr ""
 msgid "No assignment found for this email"
 msgstr ""
 
+msgid "No assignments yet. Generate assignments first."
+msgstr ""
+
+msgid ""
+"No emails are sent yet. You send them in the next step, when you are "
+"ready."
+msgstr ""
+
 msgid "No gift wishes entered yet. Check back later!"
 msgstr ""
 
@@ -277,6 +306,12 @@ msgstr ""
 msgid "Removing participant..."
 msgstr ""
 
+msgid "Resend email"
+msgstr ""
+
+msgid "Resend to everyone"
+msgstr ""
+
 msgid "Save Preferences"
 msgstr ""
 
@@ -289,7 +324,25 @@ msgstr ""
 msgid "Select any participants you should not draw. This preference is one-way."
 msgstr ""
 
-msgid "Skip sending email notifications"
+msgid "Send Emails"
+msgstr ""
+
+msgid "Send email"
+msgstr ""
+
+msgid ""
+"Send the assignment email again to everyone, including people who already"
+" got it?"
+msgstr ""
+
+#, python-format
+msgid "Send the assignment email to %(email)s?"
+msgstr ""
+
+msgid "Send to everyone not yet notified"
+msgstr ""
+
+msgid "Sending emails..."
 msgstr ""
 
 msgid "Status"
@@ -302,9 +355,6 @@ msgstr[0] ""
 msgstr[1] ""
 
 msgid "Successfully registered!"
-msgstr ""
-
-msgid "System"
 msgstr ""
 
 msgid "The person who draws you will see this."

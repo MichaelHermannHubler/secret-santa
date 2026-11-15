@@ -175,12 +175,16 @@ class EmailLanguageTests(I18nTestCase):
         with self.client.session_transaction() as session:
             session['admin_authenticated'] = True
 
-        with patch('app.smtplib.SMTP') as smtp:
-            # The admin uses German; recipients must still get their own language.
-            response = self.client.post('/generate-assignments', headers={'Accept-Language': 'de'})
-
+        response = self.client.post('/generate-assignments', headers={'Accept-Language': 'de'})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json['message'], 'Zuteilungen für 3 Personen erfolgreich erstellt!')
+
+        with patch('app.smtplib.SMTP') as smtp:
+            # The admin uses German; recipients must still get their own language.
+            response = self.client.post('/admin/emails/send', json={}, headers={'Accept-Language': 'de'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['message'], 'E-Mails gesendet: 3, fehlgeschlagen: 0')
         emails = self.sent_emails(smtp)
         self.assertIn('Du beschenkst:', emails['anna@example.com'][1])
         self.assertIn('Jij koopt een cadeau voor:', emails['bram@example.com'][1])

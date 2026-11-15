@@ -225,3 +225,33 @@ textarea {
     white-space: pre-line;
     margin: 4px 0 12px;
 }
+
+.button-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+button.secondary {
+    background: #6c757d;
+}
+
+.email-status {
+    display: inline-block;
+    margin: 0 8px;
+    font-size: 14px;
+    color: #666;
+}
+
+.email-status.sent {
+    color: #155724;
+}
+
+.email-status.failed {
+    color: #721c24;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}

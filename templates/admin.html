@@ -43,18 +43,27 @@
             </div>
             {% endif %}
             
+            <p class="hint">{{ _('No emails are sent yet. You send them in the next step, when you are ready.') }}</p>
             <form id="generateForm" onsubmit="generateAssignments(event)">
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="skipEmail" name="skip_email" value="true">
-                        {{ _('Skip sending email notifications') }}
-                    </label>
-                </div>
                 <button type="submit">{{ _('Generate Assignments') }}</button>
             </form>
             <div id="generateMessage" class="message"></div>
+        </div>
+
+        {% if assignments %}
+        {% set notified = email_status.values()|selectattr('sent_at')|list|length %}
+        <div class="section">
+            <h2>{{ _('Send Emails') }}</h2>
+            <p class="status">{{ _('%(notified)d of %(total)d participants notified', notified=notified, total=assignments|length) }}</p>
+            <p>{{ _('Each participant gets an email saying whom they are gifting to. You can also send or resend to a single person in the list below.') }}</p>
+            <div class="button-row">
+                <button type="button" onclick="sendEmails({only_unsent: true})">{{ _('Send to everyone not yet notified') }}</button>
+                <button type="button" class="secondary" onclick="sendEmails({}, T.confirmResendAll)">{{ _('Resend to everyone') }}</button>
+            </div>
+            <div id="emailMessage" class="message"></div>
             <div id="emailResults" style="display: none; margin-top: 15px;"></div>
         </div>
+        {% endif %}
 
         <div class="section">
             <h2>{{ _('Registered Participants') }}</h2>
@@ -66,6 +75,21 @@
                         {% for participant in participants %}
                             <li>
                                 {{ participant.name }} ({{ participant.email }})
+                                {% set status = email_status.get(participant.email) %}
+                                {% if status %}
+                                    {% if status.error %}
+                                        <span class="email-status failed">✗ {{ _('Email failed: %(error)s', error=status.error) }}</span>
+                                    {% elif status.sent_at %}
+                                        <span class="email-status sent">✓ {{ _('Email sent %(time)s', time=status.sent_at) }}</span>
+                                    {% else %}
+                                        <span class="email-status">{{ _('Email not sent yet') }}</span>
+                                    {% endif %}
+                                    <button type="button" class="send-one secondary"
+                                            data-email="{{ participant.email }}"
+                                            style="padding: 6px 12px; font-size: 14px;">
+                                        {{ _('Resend email') if status.sent_at else _('Send email') }}
+                                    </button>
+                                {% endif %}
                                 <button type="button" class="remove-participant"
                                         data-email="{{ participant.email }}"
                                         style="background: #dc3545; padding: 6px 12px; font-size: 14px;">
@@ -81,12 +105,6 @@
             <div id="participantMessage" class="message"></div>
         </div>
 
-        {% if assignments %}
-        <div class="section">
-            <h2>{{ _('Current Assignments') }}</h2>
-            <p class="status">{{ _('Assignments have been generated!') }}</p>
-        </div>
-        {% endif %}
         {% endif %}
 
         <div class="section">
@@ -102,6 +120,9 @@
             'removing': _('Removing participant...'),
             'removeFailed': _('Could not remove participant.'),
             'generating': _('Generating assignments...'),
+            'sending': _('Sending emails...'),
+            'confirmResendAll': _('Send the assignment email again to everyone, including people who already got it?'),
+            'confirmSendOne': _('Send the assignment email to %(email)s?', email='__EMAIL__'),
             'emailNotifications': _('Email Notifications:')
         }|tojson }};
 
@@ -188,69 +209,89 @@
         
         function generateAssignments(event) {
             event.preventDefault();
-            const form = event.target;
-            const formData = new FormData(form);
             const messageDiv = document.getElementById('generateMessage');
-            const skipEmail = document.getElementById('skipEmail').checked;
-            
-            // Add skip_email to form data
-            if (skipEmail) {
-                formData.set('skip_email', 'true');
-            }
-            
             messageDiv.textContent = T.generating;
             messageDiv.className = 'message';
             messageDiv.style.display = 'block';
-            
-            fetch('/generate-assignments', {
-                method: 'POST',
-                body: formData
-            })
+
+            fetch('/generate-assignments', { method: 'POST' })
             .then(response => response.json())
             .then(data => {
+                messageDiv.textContent = data.message;
+                messageDiv.className = data.success ? 'message success' : 'message error';
                 if (data.success) {
-                    messageDiv.textContent = data.message;
-                    messageDiv.className = 'message success';
-                    
-                    const emailResultsDiv = document.getElementById('emailResults');
-                    if (data.email_results && data.email_results.length > 0) {
-                        // Build nodes with textContent: participant names are user input.
-                        const heading = document.createElement('h3');
-                        heading.textContent = T.emailNotifications;
-                        const list = document.createElement('ul');
-                        list.style.listStyle = 'none';
-                        list.style.padding = '0';
-                        data.email_results.forEach(result => {
-                            const item = document.createElement('li');
-                            item.style.padding = '5px 0';
-                            if (result.success) {
-                                item.style.color = '#155724';
-                                item.textContent = `✓ ${result.participant} (${result.email})`;
-                            } else {
-                                item.style.color = '#721c24';
-                                item.textContent = `✗ ${result.participant}: ${result.message}`;
-                            }
-                            list.appendChild(item);
-                        });
-                        emailResultsDiv.replaceChildren(heading, list);
-                        emailResultsDiv.style.display = 'block';
-                    } else {
-                        emailResultsDiv.style.display = 'none';
-                    }
-                    
-                    setTimeout(() => {
-                        location.reload();
-                    }, 5000);
-                } else {
-                    messageDiv.textContent = data.message;
-                    messageDiv.className = 'message error';
-                    document.getElementById('emailResults').style.display = 'none';
+                    setTimeout(() => location.reload(), 1500);
                 }
             })
-            .catch(error => {
+            .catch(() => {
                 messageDiv.textContent = T.genericError;
                 messageDiv.className = 'message error';
             });
+        }
+
+        document.querySelectorAll('.send-one').forEach(button => {
+            button.addEventListener('click', () => {
+                sendEmails(
+                    { email: button.dataset.email },
+                    T.confirmSendOne.replace('__EMAIL__', button.dataset.email)
+                );
+            });
+        });
+
+        async function sendEmails(payload, confirmText) {
+            if (confirmText && !confirm(confirmText)) {
+                return;
+            }
+            const messageDiv = document.getElementById('emailMessage');
+            const resultsDiv = document.getElementById('emailResults');
+            messageDiv.scrollIntoView({ block: 'nearest' });
+            messageDiv.textContent = T.sending;
+            messageDiv.className = 'message';
+            messageDiv.style.display = 'block';
+            resultsDiv.style.display = 'none';
+            document.querySelectorAll('button').forEach(button => button.disabled = true);
+
+            try {
+                const response = await fetch('/admin/emails/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (!response.ok || !data.success) {
+                    throw new Error(data.message || T.genericError);
+                }
+                const failed = data.email_results.some(result => !result.success);
+                messageDiv.textContent = data.message;
+                messageDiv.className = failed ? 'message error' : 'message success';
+
+                if (data.email_results.length > 0) {
+                    // Build nodes with textContent: participant names are user input.
+                    const heading = document.createElement('h3');
+                    heading.textContent = T.emailNotifications;
+                    const list = document.createElement('ul');
+                    list.style.listStyle = 'none';
+                    list.style.padding = '0';
+                    data.email_results.forEach(result => {
+                        const item = document.createElement('li');
+                        item.style.padding = '5px 0';
+                        item.style.color = result.success ? '#155724' : '#721c24';
+                        item.textContent = result.success
+                            ? `✓ ${result.participant} (${result.email})`
+                            : `✗ ${result.participant}: ${result.message}`;
+                        list.appendChild(item);
+                    });
+                    resultsDiv.replaceChildren(heading, list);
+                    resultsDiv.style.display = 'block';
+                }
+                // Refresh the per-person status; leave failures on screen longer.
+                setTimeout(() => location.reload(), failed ? 8000 : 3000);
+            } catch (error) {
+                messageDiv.textContent = error.message || T.genericError;
+                messageDiv.className = 'message error';
+            } finally {
+                document.querySelectorAll('button').forEach(button => button.disabled = false);
+            }
         }
         {% endif %}
     </script>

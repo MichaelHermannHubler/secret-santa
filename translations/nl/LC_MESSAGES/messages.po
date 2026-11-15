@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: secret-santa VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-15 20:48+0100\n"
+"POT-Creation-Date: 2026-11-15 20:57+0100\n"
 "PO-Revision-Date: 2026-11-15 20:35+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: nl\n"
@@ -18,6 +18,10 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
+
+#, python-format
+msgid "%(notified)d of %(total)d participants notified"
+msgstr "%(notified)d van de %(total)d deelnemers op de hoogte gebracht"
 
 msgid "A participant cannot be excluded from themselves"
 msgstr "Een deelnemer kan zichzelf niet uitsluiten"
@@ -61,9 +65,6 @@ msgstr "Lootje gevonden, maar de ontvanger bestaat niet meer"
 msgid "Assignments already exist! Generating new assignments will overwrite existing ones."
 msgstr "Er zijn al lootjes getrokken! Opnieuw trekken overschrijft de bestaande lootjes."
 
-msgid "Assignments have been generated!"
-msgstr "De lootjes zijn getrokken!"
-
 msgid "Assignments have been made! Check your email or use the link above to view your assignment."
 msgstr "De lootjes zijn getrokken! Kijk in je e-mail of gebruik de link hierboven om je lootje te bekijken."
 
@@ -92,11 +93,11 @@ msgstr "Uitsluitingen konden niet worden opgeslagen: %(error)s"
 msgid "Could not save preferences."
 msgstr "Voorkeuren konden niet worden opgeslagen."
 
-msgid "Current Assignments"
-msgstr "Huidige lootjes"
-
 msgid "Each assignment exclusion must contain two participant emails"
 msgstr "Elke uitsluiting moet twee e-mailadressen van deelnemers bevatten"
+
+msgid "Each participant gets an email saying whom they are gifting to. You can also send or resend to a single person in the list below."
+msgstr "Elke deelnemer krijgt een e-mail met wie hij of zij heeft getrokken. In de lijst hieronder kun je ook naar één persoon (opnieuw) versturen."
 
 msgid "Email Notifications:"
 msgstr "E-mailmeldingen:"
@@ -104,8 +105,19 @@ msgstr "E-mailmeldingen:"
 msgid "Email configuration not set"
 msgstr "E-mail is niet geconfigureerd"
 
+#, python-format
+msgid "Email failed: %(error)s"
+msgstr "E-mail mislukt: %(error)s"
+
 msgid "Email is required"
 msgstr "E-mailadres is verplicht"
+
+msgid "Email not sent yet"
+msgstr "E-mail nog niet verstuurd"
+
+#, python-format
+msgid "Email sent %(time)s"
+msgstr "E-mail verstuurd op %(time)s"
 
 msgid "Email sent successfully"
 msgstr "E-mail succesvol verzonden"
@@ -113,11 +125,18 @@ msgstr "E-mail succesvol verzonden"
 msgid "Email:"
 msgstr "E-mail:"
 
+#, python-format
+msgid "Emails sent: %(sent)d, failed: %(failed)d"
+msgstr "E-mails verstuurd: %(sent)d, mislukt: %(failed)d"
+
 msgid "Enter your email to view your Secret Santa assignment:"
 msgstr "Vul je e-mailadres in om te zien wie je hebt getrokken:"
 
 msgid "Enter your registered email to update your gift wishes and choose who you should not draw. Exclusions are one-way and apply the next time assignments are generated."
 msgstr "Vul je geregistreerde e-mailadres in om je cadeauwensen aan te passen en te kiezen wie je niet wilt trekken. Uitsluitingen gelden maar in één richting en tellen mee bij de volgende trekking."
+
+msgid "Everyone has already been notified."
+msgstr "Iedereen is al op de hoogte gebracht."
 
 msgid "Excluded participants must be provided as a list"
 msgstr "Uitgesloten deelnemers moeten als lijst worden opgegeven"
@@ -208,6 +227,12 @@ msgstr "Er zijn minstens 2 deelnemers nodig om lootjes te trekken"
 msgid "No assignment found for this email"
 msgstr "Geen lootje gevonden voor dit e-mailadres"
 
+msgid "No assignments yet. Generate assignments first."
+msgstr "Er zijn nog geen lootjes getrokken. Trek eerst de lootjes."
+
+msgid "No emails are sent yet. You send them in the next step, when you are ready."
+msgstr "Er worden nog geen e-mails verstuurd. Dat doe je in de volgende stap, wanneer je er klaar voor bent."
+
 msgid "No gift wishes entered yet. Check back later!"
 msgstr "Nog geen cadeauwensen ingevuld. Kijk later nog eens!"
 
@@ -273,6 +298,12 @@ msgstr "Als je een deelnemer verwijdert, worden de huidige lootjes gewist. Trek 
 msgid "Removing participant..."
 msgstr "Deelnemer wordt verwijderd…"
 
+msgid "Resend email"
+msgstr "Opnieuw versturen"
+
+msgid "Resend to everyone"
+msgstr "Opnieuw naar iedereen versturen"
+
 msgid "Save Preferences"
 msgstr "Voorkeuren opslaan"
 
@@ -285,8 +316,24 @@ msgstr "Secret Santa-organisator"
 msgid "Select any participants you should not draw. This preference is one-way."
 msgstr "Kies de deelnemers die je niet wilt trekken. Dit geldt maar in één richting."
 
-msgid "Skip sending email notifications"
-msgstr "Geen e-mailmeldingen versturen"
+msgid "Send Emails"
+msgstr "E-mails versturen"
+
+msgid "Send email"
+msgstr "E-mail versturen"
+
+msgid "Send the assignment email again to everyone, including people who already got it?"
+msgstr "De lootjes-e-mail opnieuw naar iedereen versturen, ook naar wie hem al heeft gekregen?"
+
+#, python-format
+msgid "Send the assignment email to %(email)s?"
+msgstr "De lootjes-e-mail naar %(email)s versturen?"
+
+msgid "Send to everyone not yet notified"
+msgstr "Versturen naar iedereen die nog geen e-mail heeft"
+
+msgid "Sending emails..."
+msgstr "E-mails worden verstuurd…"
 
 msgid "Status"
 msgstr "Status"
@@ -299,9 +346,6 @@ msgstr[1] "Lootjes voor %(num)d deelnemers succesvol getrokken!"
 
 msgid "Successfully registered!"
 msgstr "Succesvol aangemeld!"
-
-msgid "System"
-msgstr "Systeem"
 
 msgid "The person who draws you will see this."
 msgstr "Degene die jou trekt, ziet dit."
