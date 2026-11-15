@@ -18,6 +18,7 @@ RUN mkdir -p /app/data
 # Expose port
 EXPOSE 5000
 
-# Run the application
-CMD ["python", "app.py"]
-
+# Serve with gunicorn instead of the Flask development server.
+# Keep a single worker: state lives in JSON files without locking, and a
+# random fallback SECRET_KEY would differ per worker process.
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "4", "app:app"]

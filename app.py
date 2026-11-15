@@ -493,4 +493,8 @@ Happy gifting!
         return False, f'Failed to send email: {str(e)}'
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Local development only; the Docker image serves the app with gunicorn.
+    # Never enable debug where the app is reachable by others: the Werkzeug
+    # debugger allows arbitrary code execution.
+    debug = os.environ.get('FLASK_DEBUG', '').lower() in ('1', 'true', 'yes')
+    app.run(host='127.0.0.1' if debug else '0.0.0.0', port=5000, debug=debug)

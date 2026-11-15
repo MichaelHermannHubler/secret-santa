@@ -203,16 +203,25 @@
                     
                     const emailResultsDiv = document.getElementById('emailResults');
                     if (data.email_results && data.email_results.length > 0) {
-                        let html = '<h3>Email Notifications:</h3><ul style="list-style: none; padding: 0;">';
+                        // Build nodes with textContent: participant names are user input.
+                        const heading = document.createElement('h3');
+                        heading.textContent = 'Email Notifications:';
+                        const list = document.createElement('ul');
+                        list.style.listStyle = 'none';
+                        list.style.padding = '0';
                         data.email_results.forEach(result => {
+                            const item = document.createElement('li');
+                            item.style.padding = '5px 0';
                             if (result.success) {
-                                html += `<li style="color: #155724; padding: 5px 0;">✓ ${result.participant} (${result.email})</li>`;
+                                item.style.color = '#155724';
+                                item.textContent = `✓ ${result.participant} (${result.email})`;
                             } else {
-                                html += `<li style="color: #721c24; padding: 5px 0;">✗ ${result.participant}: ${result.message}</li>`;
+                                item.style.color = '#721c24';
+                                item.textContent = `✗ ${result.participant}: ${result.message}`;
                             }
+                            list.appendChild(item);
                         });
-                        html += '</ul>';
-                        emailResultsDiv.innerHTML = html;
+                        emailResultsDiv.replaceChildren(heading, list);
                         emailResultsDiv.style.display = 'block';
                     } else {
                         emailResultsDiv.style.display = 'none';
