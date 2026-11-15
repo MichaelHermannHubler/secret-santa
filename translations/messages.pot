@@ -1,0 +1,333 @@
+# Translations template for secret-santa.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the secret-santa
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: secret-santa VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-15 20:34+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "A participant cannot be excluded from themselves"
+msgstr ""
+
+msgid "A participant email is required"
+msgstr ""
+
+msgid "A registered email is required"
+msgstr ""
+
+msgid "Admin"
+msgstr ""
+
+msgid "Admin - Secret Santa Organizer"
+msgstr ""
+
+msgid "Admin Login"
+msgstr ""
+
+msgid "Admin Panel"
+msgstr ""
+
+msgid "Admin Panel - Generate Assignments"
+msgstr ""
+
+msgid "Admin Password:"
+msgstr ""
+
+msgid "An error occurred. Please try again."
+msgstr ""
+
+msgid "Assignment exclusions must be a list"
+msgstr ""
+
+msgid "Assignment exclusions must refer to registered participants"
+msgstr ""
+
+msgid "Assignment found but giftee not found"
+msgstr ""
+
+msgid ""
+"Assignments already exist! Generating new assignments will overwrite "
+"existing ones."
+msgstr ""
+
+msgid "Assignments have been generated!"
+msgstr ""
+
+msgid ""
+"Assignments have been made! Check your email or use the link above to "
+"view your assignment."
+msgstr ""
+
+msgid "Authentication successful"
+msgstr ""
+
+msgid "Back to Home"
+msgstr ""
+
+msgid "Check Your Assignment"
+msgstr ""
+
+msgid "Click here to view your Secret Santa assignment"
+msgstr ""
+
+msgid "Could not load preferences."
+msgstr ""
+
+msgid "Could not remove participant."
+msgstr ""
+
+#, python-format
+msgid "Could not save exclusions: %(error)s"
+msgstr ""
+
+msgid "Could not save preferences."
+msgstr ""
+
+msgid "Current Assignments"
+msgstr ""
+
+msgid "Each assignment exclusion must contain two participant emails"
+msgstr ""
+
+msgid "Email Notifications:"
+msgstr ""
+
+msgid "Email configuration not set"
+msgstr ""
+
+msgid "Email is required"
+msgstr ""
+
+msgid "Email sent successfully"
+msgstr ""
+
+msgid "Email:"
+msgstr ""
+
+msgid "Enter your email to view your Secret Santa assignment:"
+msgstr ""
+
+msgid ""
+"Enter your registered email to choose who you should not draw. These "
+"exclusions are one-way and apply the next time assignments are generated."
+msgstr ""
+
+msgid "Excluded participants must be provided as a list"
+msgstr ""
+
+#, python-format
+msgid "Failed to send email: %(error)s"
+msgstr ""
+
+msgid "Generate Assignments"
+msgstr ""
+
+msgid "Generating assignments..."
+msgstr ""
+
+#, python-format
+msgid ""
+"Hello %(name)s!\n"
+"\n"
+"Your Secret Santa assignment has been made!\n"
+"\n"
+"You are gifting to: %(giftee)s\n"
+"\n"
+"Remember to keep this secret! 🎁\n"
+"\n"
+"Happy gifting!"
+msgstr ""
+
+#, python-format
+msgid "Invalid assignment exclusions: %(error)s"
+msgstr ""
+
+msgid "Invalid email format"
+msgstr ""
+
+msgid "Invalid excluded participant"
+msgstr ""
+
+msgid "Invalid password"
+msgstr ""
+
+msgid "Invalid request"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "Load My Preferences"
+msgstr ""
+
+msgid "Loading preferences..."
+msgstr ""
+
+msgid "Logged out successfully"
+msgstr ""
+
+msgid "Logging in..."
+msgstr ""
+
+msgid "Login"
+msgstr ""
+
+msgid "Logout"
+msgstr ""
+
+msgid "Manage Assignment Exclusions"
+msgstr ""
+
+msgid "My Secret Santa Assignment"
+msgstr ""
+
+msgid "Name and email are required"
+msgstr ""
+
+msgid "Name:"
+msgstr ""
+
+msgid "Need at least 2 participants to generate assignments"
+msgstr ""
+
+msgid "No assignment found for this email"
+msgstr ""
+
+msgid "No participant found for this email"
+msgstr ""
+
+msgid "No participants registered yet."
+msgstr ""
+
+msgid ""
+"No valid assignments are possible with the current exclusions. Remove "
+"some exclusions and try again."
+msgstr ""
+
+msgid "Not authenticated. Please log in first."
+msgstr ""
+
+msgid "Participant not found"
+msgstr ""
+
+msgid ""
+"Participant removed. Generate assignments again to notify the remaining "
+"participants."
+msgstr ""
+
+msgid "People you do not want to be assigned:"
+msgstr ""
+
+msgid "Please enter the admin password to access the admin panel."
+msgstr ""
+
+msgid "Register"
+msgstr ""
+
+msgid "Register for Secret Santa"
+msgstr ""
+
+msgid "Registered Participants"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+#, python-format
+msgid "Remove %(email)s? This will clear current assignments."
+msgstr ""
+
+msgid ""
+"Removing a participant clears the current assignments. Generate new "
+"assignments afterward."
+msgstr ""
+
+msgid "Removing participant..."
+msgstr ""
+
+msgid "Save Preferences"
+msgstr ""
+
+msgid "Saving preferences..."
+msgstr ""
+
+msgid "Secret Santa Organizer"
+msgstr ""
+
+msgid "Select any participants you should not draw. This preference is one-way."
+msgstr ""
+
+msgid "Skip sending email notifications"
+msgstr ""
+
+msgid "Status"
+msgstr ""
+
+#, python-format
+msgid "Successfully generated assignments for %(num)d participant!"
+msgid_plural "Successfully generated assignments for %(num)d participants!"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid "Successfully registered!"
+msgstr ""
+
+msgid "System"
+msgstr ""
+
+msgid "This email is already registered"
+msgstr ""
+
+#, python-format
+msgid "Total: %(num)d participant"
+msgid_plural "Total: %(num)d participants"
+msgstr[0] ""
+msgstr[1] ""
+
+msgid ""
+"Use this form to generate Secret Santa assignments for all registered "
+"participants."
+msgstr ""
+
+msgid "View Assignment"
+msgstr ""
+
+msgid "Warning:"
+msgstr ""
+
+msgid "You are gifting to:"
+msgstr ""
+
+msgid "You can also update your assignment exclusions from that page."
+msgstr ""
+
+msgid "You cannot exclude yourself"
+msgstr ""
+
+msgid "Your Assignment"
+msgstr ""
+
+msgid "Your Email:"
+msgstr ""
+
+msgid "Your Secret Santa Assignment!"
+msgstr ""
+
+msgid "Your assignment exclusions have been saved."
+msgstr ""
+
+msgid "Your registered email:"
+msgstr ""
+

@@ -14,6 +14,7 @@ A Docker-based web application for organizing Secret Santa gift exchanges.
 - **Participant Management**: Admins can remove registered participants; existing assignments are cleared and must be generated again
 - **Email Notifications**: Automatically send assignment emails to all participants
 - **Assignment Viewing**: Participants can view their assignments on the website
+- **Multi-language**: English, German, Dutch and (just for fun) Denglisch. The language follows the browser setting and can be changed with the switcher at the top of each page. Emails are sent in the language each participant registered with
 - **Data Persistence**: All data is stored in JSON files and persists across container restarts
 - **Security**: Password protection for assignment generation, duplicate email prevention, and self-assignment prevention
 
@@ -82,6 +83,18 @@ docker exec <container-id> python assign.py --password admin123 --skip-email
 
 **Important**: Change the default password (`admin123`) by editing `data/config.json` before generating assignments.
 
+## Languages
+
+The interface and the emails are available in English, German and Dutch, plus **Denglisch**, a joke mix of half German and half English with deliberate spelling and grammar errors. Visitors get their browser's language and can switch with the links at the top of every page. Denglisch is never picked automatically; you have to choose it. Each participant's email is sent in the language they used to register.
+
+To change the fallback language for browsers that ask for none of the three, set `DEFAULT_LANGUAGE` (`en`, `de` or `nl`):
+
+```bash
+docker run -d -p 5000:5000 -e DEFAULT_LANGUAGE=de -v $(pwd)/data:/app/data michaelhermannhubler/secret-santa:latest
+```
+
+Translations live in `translations/<lang>/LC_MESSAGES/messages.po`.
+
 ## File Structure
 
 ```
@@ -90,6 +103,8 @@ secret-santa/
 ├── assign.py           # CLI script for generating assignments
 ├── requirements.txt    # Python dependencies
 ├── Dockerfile          # Docker configuration
+├── babel.cfg           # Translation string extraction config
+├── translations/       # German, Dutch and Denglisch translation catalogs (.po)
 ├── templates/          # HTML templates
 │   ├── index.html
 │   ├── my_assignment.html
@@ -110,6 +125,7 @@ secret-santa/
 - `GET /my-assignment` - Page to check your assignment
 - `POST /check-assignment` - Check assignment by email
 - `POST /participant/exclusions` - Read or update a participant's own directed exclusions
+- `GET /language/<code>` - Switch the interface language (`en`, `de`, `nl`, `en_DE`)
 - `GET /admin` - Admin panel for generating assignments
 - `POST /admin/participants/remove` - Remove a participant and clear assignments (requires admin authentication)
 - `POST /generate-assignments` - Generate assignments via web interface (requires admin password)

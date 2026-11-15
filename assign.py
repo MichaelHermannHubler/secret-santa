@@ -9,7 +9,7 @@ import os
 import json
 import argparse
 from app import (
-    load_participants, load_assignments, load_config, save_assignments,
+    app, load_participants, load_assignments, load_config, save_assignments,
     generate_assignments, send_email_notification
 )
 
@@ -76,7 +76,8 @@ def main():
                             participant['email'],
                             participant['name'],
                             giftee['name'],
-                            giftee['email']
+                            giftee['email'],
+                            participant.get('language')
                         )
                         if success:
                             success_count += 1
@@ -92,5 +93,8 @@ def main():
     print("\n✅ All done! Participants can now check their assignments on the website.")
 
 if __name__ == '__main__':
-    main()
+    # An app context is required so emails are rendered in each
+    # participant's registered language (see send_email_notification).
+    with app.app_context():
+        main()
 

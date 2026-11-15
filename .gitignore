@@ -10,3 +10,6 @@ data/
 *.log
 .DS_Store
 
+
+# Compiled translations (built by pybabel compile)
+*.mo

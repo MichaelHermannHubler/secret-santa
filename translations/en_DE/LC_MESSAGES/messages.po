@@ -1,0 +1,329 @@
+# English (Germany) translations for secret-santa.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the secret-santa
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: secret-santa VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-15 20:34+0100\n"
+"PO-Revision-Date: 2026-11-15 20:39+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en_DE\n"
+"Language-Team: en_DE <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "A participant cannot be excluded from themselves"
+msgstr "A Teilnehmer can not exclude himself from himself selbst"
+
+msgid "A participant email is required"
+msgstr "We need the E-Mail from the Teilnehmer, otherwise geht nix"
+
+msgid "A registered email is required"
+msgstr "You must give a registred E-Mail-Adress"
+
+msgid "Admin"
+msgstr "Admin-Bereich"
+
+msgid "Admin - Secret Santa Organizer"
+msgstr "Admin - Wichtel Organizär"
+
+msgid "Admin Login"
+msgstr "Admin Einlogg"
+
+msgid "Admin Panel"
+msgstr "Admin Panäl"
+
+msgid "Admin Panel - Generate Assignments"
+msgstr "Admin Panäl - Make the Auslosung"
+
+msgid "Admin Password:"
+msgstr "Admin Passwort, the secret one:"
+
+msgid "An error occurred. Please try again."
+msgstr "Oh no, there is a Fehler. Please try it again nochmal."
+
+msgid "Assignment exclusions must be a list"
+msgstr "The Ausschlüsse must be a List, sorry"
+
+msgid "Assignment exclusions must refer to registered participants"
+msgstr "Ausschlüsse must show on registred Teilnehmers"
+
+msgid "Assignment found but giftee not found"
+msgstr "Zuteilung is found, but the Beschenkte is weg"
+
+msgid "Assignments already exist! Generating new assignments will overwrite existing ones."
+msgstr "Achtung, there are already Zuteilungen! When you make new ones, the old ones go kaputt."
+
+msgid "Assignments have been generated!"
+msgstr "The Zuteilungen are ready gemacht!"
+
+msgid "Assignments have been made! Check your email or use the link above to view your assignment."
+msgstr "The Auslosung is done! Look in your E-Mails or klick the Link up there for see your Zuteilung."
+
+msgid "Authentication successful"
+msgstr "You are now inside, sehr gut"
+
+msgid "Back to Home"
+msgstr "Back to the Startseite"
+
+msgid "Check Your Assignment"
+msgstr "Look your Zuteilung"
+
+msgid "Click here to view your Secret Santa assignment"
+msgstr "Klick here for see who you must beschenk"
+
+msgid "Could not load preferences."
+msgstr "The Einstellungen could not be loaded, schade."
+
+msgid "Could not remove participant."
+msgstr "We could not throw out the Teilnehmer."
+
+#, python-format
+msgid "Could not save exclusions: %(error)s"
+msgstr "Could not speichern the Ausschlüsse: %(error)s"
+
+msgid "Could not save preferences."
+msgstr "Einstellungen could not be gespeichert."
+
+msgid "Current Assignments"
+msgstr "Actual Zuteilungen"
+
+msgid "Each assignment exclusion must contain two participant emails"
+msgstr "Every Ausschluss must have two E-Mails from Teilnehmers inside"
+
+msgid "Email Notifications:"
+msgstr "E-Mail Benachrichtigungs:"
+
+msgid "Email configuration not set"
+msgstr "The E-Mail is not konfiguriered"
+
+msgid "Email is required"
+msgstr "E-Mail is Pflicht, sorry"
+
+msgid "Email sent successfully"
+msgstr "E-Mail is gesendet, wunderbar"
+
+msgid "Email:"
+msgstr "E-Mail Adress:"
+
+msgid "Enter your email to view your Secret Santa assignment:"
+msgstr "Give your E-Mail in, then you see whom you beschenk:"
+
+msgid "Enter your registered email to choose who you should not draw. These exclusions are one-way and apply the next time assignments are generated."
+msgstr "Give your registred E-Mail in and choose who you will not ziehen. This Ausschlüsse are only in one Richtung and count by the next Auslosung."
+
+msgid "Excluded participants must be provided as a list"
+msgstr "Excluded Teilnehmers must come as a List"
+
+#, python-format
+msgid "Failed to send email: %(error)s"
+msgstr "E-Mail sending is schiefgegangen: %(error)s"
+
+msgid "Generate Assignments"
+msgstr "Make Zuteilungen"
+
+msgid "Generating assignments..."
+msgstr "Zuteilungen are made, moment please..."
+
+#, python-format
+msgid ""
+"Hello %(name)s!\n"
+"\n"
+"Your Secret Santa assignment has been made!\n"
+"\n"
+"You are gifting to: %(giftee)s\n"
+"\n"
+"Remember to keep this secret! 🎁\n"
+"\n"
+"Happy gifting!"
+msgstr ""
+"Hallo %(name)s!\n"
+"\n"
+"The Wichtel Auslosung is gemacht!\n"
+"\n"
+"You become a Geschenk for: %(giftee)s\n"
+"\n"
+"Psst, tell it nobody! 🎁\n"
+"\n"
+"Much Spaß by the Schenking!"
+
+#, python-format
+msgid "Invalid assignment exclusions: %(error)s"
+msgstr "Ungültig Ausschlüsse: %(error)s"
+
+msgid "Invalid email format"
+msgstr "This E-Mail is not korrekt formatted"
+
+msgid "Invalid excluded participant"
+msgstr "Ungültig excluded Teilnehmer"
+
+msgid "Invalid password"
+msgstr "Falsch Password, try again"
+
+msgid "Invalid request"
+msgstr "This Anfrage is kaputt"
+
+msgid "Language"
+msgstr "Sprach"
+
+msgid "Load My Preferences"
+msgstr "Load my Einstellungen"
+
+msgid "Loading preferences..."
+msgstr "Einstellungen are loading, wait a Moment..."
+
+msgid "Logged out successfully"
+msgstr "You are now ausgeloggt"
+
+msgid "Logging in..."
+msgstr "Einlogging..."
+
+msgid "Login"
+msgstr "Einloggen"
+
+msgid "Logout"
+msgstr "Rausloggen"
+
+msgid "Manage Assignment Exclusions"
+msgstr "Manage your Ausschlüsse"
+
+msgid "My Secret Santa Assignment"
+msgstr "My Wichtel Zuteilung"
+
+msgid "Name and email are required"
+msgstr "Name and E-Mail are Pflicht"
+
+msgid "Name:"
+msgstr "Name from you:"
+
+msgid "Need at least 2 participants to generate assignments"
+msgstr "We need minimum 2 Teilnehmers for make the Auslosung"
+
+msgid "No assignment found for this email"
+msgstr "For this E-Mail there is no Zuteilung, leider"
+
+msgid "No participant found for this email"
+msgstr "Nobody with this E-Mail is angemeldet"
+
+msgid "No participants registered yet."
+msgstr "Still nobody is angemeldet."
+
+msgid "No valid assignments are possible with the current exclusions. Remove some exclusions and try again."
+msgstr "With this Ausschlüsse no Auslosung is possible. Make some Ausschlüsse away and try it again."
+
+msgid "Not authenticated. Please log in first."
+msgstr "You are not eingeloggt. Please log first in."
+
+msgid "Participant not found"
+msgstr "Teilnehmer is not findable"
+
+msgid "Participant removed. Generate assignments again to notify the remaining participants."
+msgstr "Teilnehmer is rausgeworfen. Make new Zuteilungen so the rest Teilnehmers become a Bescheid."
+
+msgid "People you do not want to be assigned:"
+msgstr "Peoples you will not ziehen:"
+
+msgid "Please enter the admin password to access the admin panel."
+msgstr "Please give the Admin Passwort in for come in the Admin Panäl."
+
+msgid "Register"
+msgstr "Anmelden yourself"
+
+msgid "Register for Secret Santa"
+msgstr "Make mit by the Wichteln"
+
+msgid "Registered Participants"
+msgstr "Angemeldete Peoples"
+
+msgid "Remove"
+msgstr "Rauswerfen"
+
+#, python-format
+msgid "Remove %(email)s? This will clear current assignments."
+msgstr "Really throw %(email)s out? Then the actual Zuteilungen are weg."
+
+msgid "Removing a participant clears the current assignments. Generate new assignments afterward."
+msgstr "When you throw a Teilnehmer out, the Zuteilungen go kaputt. Make new ones afterwards."
+
+msgid "Removing participant..."
+msgstr "Teilnehmer is rausgeworfen..."
+
+msgid "Save Preferences"
+msgstr "Einstellungen speichern"
+
+msgid "Saving preferences..."
+msgstr "Einstellungen are gespeichert..."
+
+msgid "Secret Santa Organizer"
+msgstr "Wichtel Organizär"
+
+msgid "Select any participants you should not draw. This preference is one-way."
+msgstr "Choose the Teilnehmers you will not ziehen. This is only in one Richtung."
+
+msgid "Skip sending email notifications"
+msgstr "Don't send the E-Mails, bitte"
+
+msgid "Status"
+msgstr "Statussss"
+
+#, python-format
+msgid "Successfully generated assignments for %(num)d participant!"
+msgid_plural "Successfully generated assignments for %(num)d participants!"
+msgstr[0] "Zuteilung for %(num)d Teilnehmer is erfolgreich gemacht!"
+msgstr[1] "Zuteilungen for %(num)d Teilnehmers are erfolgreich gemacht!"
+
+msgid "Successfully registered!"
+msgstr "You are angemeldet, super!"
+
+msgid "System"
+msgstr "Systemm"
+
+msgid "This email is already registered"
+msgstr "This E-Mail is already angemeldet, du Schlingel"
+
+#, python-format
+msgid "Total: %(num)d participant"
+msgid_plural "Total: %(num)d participants"
+msgstr[0] "Insgesamt: %(num)d Teilnehmer"
+msgstr[1] "Insgesamt: %(num)d Teilnehmers"
+
+msgid "Use this form to generate Secret Santa assignments for all registered participants."
+msgstr "With this Formular you make the Wichtel Zuteilungen for all angemeldete Peoples."
+
+msgid "View Assignment"
+msgstr "Show me my Zuteilung"
+
+msgid "Warning:"
+msgstr "Achtung, Warning:"
+
+msgid "You are gifting to:"
+msgstr "You become a Geschenk for:"
+
+msgid "You can also update your assignment exclusions from that page."
+msgstr "There you can also make your Ausschlüsse new."
+
+msgid "You cannot exclude yourself"
+msgstr "You can not exclude you yourself"
+
+msgid "Your Assignment"
+msgstr "Your Zuteilung"
+
+msgid "Your Email:"
+msgstr "Your E-Mail Adress:"
+
+msgid "Your Secret Santa Assignment!"
+msgstr "Your Wichtel Zuteilung is here!"
+
+msgid "Your assignment exclusions have been saved."
+msgstr "Your Ausschlüsse are gespeichert, alles klar."
+
+msgid "Your registered email:"
+msgstr "Your registred E-Mail:"
+

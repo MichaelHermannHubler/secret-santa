@@ -182,3 +182,22 @@ button[onclick="logout()"]:hover {
     background: #c82333 !important;
 }
 
+
+.language-switcher {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.language-switcher a {
+    color: inherit;
+    opacity: 0.75;
+}
+
+.language-switcher a:hover,
+.language-switcher strong {
+    opacity: 1;
+}

@@ -1,0 +1,329 @@
+# Dutch translations for secret-santa.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the secret-santa
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: secret-santa VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-11-15 20:34+0100\n"
+"PO-Revision-Date: 2026-11-15 20:35+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: nl\n"
+"Language-Team: nl <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
+
+msgid "A participant cannot be excluded from themselves"
+msgstr "Een deelnemer kan zichzelf niet uitsluiten"
+
+msgid "A participant email is required"
+msgstr "Het e-mailadres van een deelnemer is verplicht"
+
+msgid "A registered email is required"
+msgstr "Een geregistreerd e-mailadres is verplicht"
+
+msgid "Admin"
+msgstr "Beheer"
+
+msgid "Admin - Secret Santa Organizer"
+msgstr "Beheer – Secret Santa-organisator"
+
+msgid "Admin Login"
+msgstr "Inloggen als beheerder"
+
+msgid "Admin Panel"
+msgstr "Beheerpaneel"
+
+msgid "Admin Panel - Generate Assignments"
+msgstr "Beheerpaneel – Lootjes trekken"
+
+msgid "Admin Password:"
+msgstr "Beheerderswachtwoord:"
+
+msgid "An error occurred. Please try again."
+msgstr "Er is een fout opgetreden. Probeer het opnieuw."
+
+msgid "Assignment exclusions must be a list"
+msgstr "Uitsluitingen moeten als lijst worden opgegeven"
+
+msgid "Assignment exclusions must refer to registered participants"
+msgstr "Uitsluitingen moeten naar geregistreerde deelnemers verwijzen"
+
+msgid "Assignment found but giftee not found"
+msgstr "Lootje gevonden, maar de ontvanger bestaat niet meer"
+
+msgid "Assignments already exist! Generating new assignments will overwrite existing ones."
+msgstr "Er zijn al lootjes getrokken! Opnieuw trekken overschrijft de bestaande lootjes."
+
+msgid "Assignments have been generated!"
+msgstr "De lootjes zijn getrokken!"
+
+msgid "Assignments have been made! Check your email or use the link above to view your assignment."
+msgstr "De lootjes zijn getrokken! Kijk in je e-mail of gebruik de link hierboven om je lootje te bekijken."
+
+msgid "Authentication successful"
+msgstr "Succesvol ingelogd"
+
+msgid "Back to Home"
+msgstr "Terug naar de startpagina"
+
+msgid "Check Your Assignment"
+msgstr "Bekijk je lootje"
+
+msgid "Click here to view your Secret Santa assignment"
+msgstr "Klik hier om te zien wie je hebt getrokken"
+
+msgid "Could not load preferences."
+msgstr "Voorkeuren konden niet worden geladen."
+
+msgid "Could not remove participant."
+msgstr "Deelnemer kon niet worden verwijderd."
+
+#, python-format
+msgid "Could not save exclusions: %(error)s"
+msgstr "Uitsluitingen konden niet worden opgeslagen: %(error)s"
+
+msgid "Could not save preferences."
+msgstr "Voorkeuren konden niet worden opgeslagen."
+
+msgid "Current Assignments"
+msgstr "Huidige lootjes"
+
+msgid "Each assignment exclusion must contain two participant emails"
+msgstr "Elke uitsluiting moet twee e-mailadressen van deelnemers bevatten"
+
+msgid "Email Notifications:"
+msgstr "E-mailmeldingen:"
+
+msgid "Email configuration not set"
+msgstr "E-mail is niet geconfigureerd"
+
+msgid "Email is required"
+msgstr "E-mailadres is verplicht"
+
+msgid "Email sent successfully"
+msgstr "E-mail succesvol verzonden"
+
+msgid "Email:"
+msgstr "E-mail:"
+
+msgid "Enter your email to view your Secret Santa assignment:"
+msgstr "Vul je e-mailadres in om te zien wie je hebt getrokken:"
+
+msgid "Enter your registered email to choose who you should not draw. These exclusions are one-way and apply the next time assignments are generated."
+msgstr "Vul je geregistreerde e-mailadres in om te kiezen wie je niet wilt trekken. Deze uitsluitingen gelden maar in één richting en tellen mee bij de volgende trekking."
+
+msgid "Excluded participants must be provided as a list"
+msgstr "Uitgesloten deelnemers moeten als lijst worden opgegeven"
+
+#, python-format
+msgid "Failed to send email: %(error)s"
+msgstr "E-mail verzenden mislukt: %(error)s"
+
+msgid "Generate Assignments"
+msgstr "Lootjes trekken"
+
+msgid "Generating assignments..."
+msgstr "Lootjes worden getrokken…"
+
+#, python-format
+msgid ""
+"Hello %(name)s!\n"
+"\n"
+"Your Secret Santa assignment has been made!\n"
+"\n"
+"You are gifting to: %(giftee)s\n"
+"\n"
+"Remember to keep this secret! 🎁\n"
+"\n"
+"Happy gifting!"
+msgstr ""
+"Hallo %(name)s!\n"
+"\n"
+"De lootjes voor Secret Santa zijn getrokken!\n"
+"\n"
+"Jij koopt een cadeau voor: %(giftee)s\n"
+"\n"
+"Houd het geheim! 🎁\n"
+"\n"
+"Veel plezier met shoppen!"
+
+#, python-format
+msgid "Invalid assignment exclusions: %(error)s"
+msgstr "Ongeldige uitsluitingen: %(error)s"
+
+msgid "Invalid email format"
+msgstr "Ongeldig e-mailadres"
+
+msgid "Invalid excluded participant"
+msgstr "Ongeldige uitgesloten deelnemer"
+
+msgid "Invalid password"
+msgstr "Onjuist wachtwoord"
+
+msgid "Invalid request"
+msgstr "Ongeldig verzoek"
+
+msgid "Language"
+msgstr "Taal"
+
+msgid "Load My Preferences"
+msgstr "Mijn voorkeuren laden"
+
+msgid "Loading preferences..."
+msgstr "Voorkeuren worden geladen…"
+
+msgid "Logged out successfully"
+msgstr "Succesvol uitgelogd"
+
+msgid "Logging in..."
+msgstr "Bezig met inloggen…"
+
+msgid "Login"
+msgstr "Inloggen"
+
+msgid "Logout"
+msgstr "Uitloggen"
+
+msgid "Manage Assignment Exclusions"
+msgstr "Uitsluitingen beheren"
+
+msgid "My Secret Santa Assignment"
+msgstr "Mijn Secret Santa-lootje"
+
+msgid "Name and email are required"
+msgstr "Naam en e-mailadres zijn verplicht"
+
+msgid "Name:"
+msgstr "Naam:"
+
+msgid "Need at least 2 participants to generate assignments"
+msgstr "Er zijn minstens 2 deelnemers nodig om lootjes te trekken"
+
+msgid "No assignment found for this email"
+msgstr "Geen lootje gevonden voor dit e-mailadres"
+
+msgid "No participant found for this email"
+msgstr "Geen deelnemer gevonden met dit e-mailadres"
+
+msgid "No participants registered yet."
+msgstr "Er zijn nog geen deelnemers aangemeld."
+
+msgid "No valid assignments are possible with the current exclusions. Remove some exclusions and try again."
+msgstr "Met de huidige uitsluitingen is geen geldige trekking mogelijk. Verwijder een paar uitsluitingen en probeer het opnieuw."
+
+msgid "Not authenticated. Please log in first."
+msgstr "Niet ingelogd. Log eerst in."
+
+msgid "Participant not found"
+msgstr "Deelnemer niet gevonden"
+
+msgid "Participant removed. Generate assignments again to notify the remaining participants."
+msgstr "Deelnemer verwijderd. Trek de lootjes opnieuw om de overige deelnemers op de hoogte te brengen."
+
+msgid "People you do not want to be assigned:"
+msgstr "Mensen die je niet wilt trekken:"
+
+msgid "Please enter the admin password to access the admin panel."
+msgstr "Vul het beheerderswachtwoord in om het beheerpaneel te openen."
+
+msgid "Register"
+msgstr "Aanmelden"
+
+msgid "Register for Secret Santa"
+msgstr "Aanmelden voor Secret Santa"
+
+msgid "Registered Participants"
+msgstr "Aangemelde deelnemers"
+
+msgid "Remove"
+msgstr "Verwijderen"
+
+#, python-format
+msgid "Remove %(email)s? This will clear current assignments."
+msgstr "%(email)s verwijderen? De huidige lootjes worden dan gewist."
+
+msgid "Removing a participant clears the current assignments. Generate new assignments afterward."
+msgstr "Als je een deelnemer verwijdert, worden de huidige lootjes gewist. Trek daarna opnieuw lootjes."
+
+msgid "Removing participant..."
+msgstr "Deelnemer wordt verwijderd…"
+
+msgid "Save Preferences"
+msgstr "Voorkeuren opslaan"
+
+msgid "Saving preferences..."
+msgstr "Voorkeuren worden opgeslagen…"
+
+msgid "Secret Santa Organizer"
+msgstr "Secret Santa-organisator"
+
+msgid "Select any participants you should not draw. This preference is one-way."
+msgstr "Kies de deelnemers die je niet wilt trekken. Dit geldt maar in één richting."
+
+msgid "Skip sending email notifications"
+msgstr "Geen e-mailmeldingen versturen"
+
+msgid "Status"
+msgstr "Status"
+
+#, python-format
+msgid "Successfully generated assignments for %(num)d participant!"
+msgid_plural "Successfully generated assignments for %(num)d participants!"
+msgstr[0] "Lootje voor %(num)d deelnemer succesvol getrokken!"
+msgstr[1] "Lootjes voor %(num)d deelnemers succesvol getrokken!"
+
+msgid "Successfully registered!"
+msgstr "Succesvol aangemeld!"
+
+msgid "System"
+msgstr "Systeem"
+
+msgid "This email is already registered"
+msgstr "Dit e-mailadres is al aangemeld"
+
+#, python-format
+msgid "Total: %(num)d participant"
+msgid_plural "Total: %(num)d participants"
+msgstr[0] "Totaal: %(num)d deelnemer"
+msgstr[1] "Totaal: %(num)d deelnemers"
+
+msgid "Use this form to generate Secret Santa assignments for all registered participants."
+msgstr "Gebruik dit formulier om lootjes te trekken voor alle aangemelde deelnemers."
+
+msgid "View Assignment"
+msgstr "Lootje bekijken"
+
+msgid "Warning:"
+msgstr "Let op:"
+
+msgid "You are gifting to:"
+msgstr "Jij koopt een cadeau voor:"
+
+msgid "You can also update your assignment exclusions from that page."
+msgstr "Op die pagina kun je ook je uitsluitingen aanpassen."
+
+msgid "You cannot exclude yourself"
+msgstr "Je kunt jezelf niet uitsluiten"
+
+msgid "Your Assignment"
+msgstr "Jouw lootje"
+
+msgid "Your Email:"
+msgstr "Jouw e-mailadres:"
+
+msgid "Your Secret Santa Assignment!"
+msgstr "Jouw Secret Santa-lootje!"
+
+msgid "Your assignment exclusions have been saved."
+msgstr "Je uitsluitingen zijn opgeslagen."
+
+msgid "Your registered email:"
+msgstr "Je geregistreerde e-mailadres:"
+
