@@ -6,6 +6,7 @@ Flask Secret Santa app, shipped as a Docker image (`michaelhermannhubler/secret-
 
 ```bash
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt   # Flask is not installed system-wide
+.venv/bin/pybabel compile -d translations                            # required before tests/running: .mo files are gitignored
 .venv/bin/python -m unittest discover -s tests                       # run tests (stdlib unittest, no pytest)
 FLASK_DEBUG=1 .venv/bin/python app.py                                # dev server on 127.0.0.1:5000 (writes to ./data)
 docker build -t secret-santa . && docker run -p 5000:5000 secret-santa  # production: gunicorn, 1 worker
@@ -21,7 +22,7 @@ docker build -t secret-santa . && docker run -p 5000:5000 secret-santa  # produc
 
 ## Data model (`data/`, gitignored, root-owned when created by the container)
 
-- `participants.json`: list of `{name, email, registered_at}`. Emails are lowercased and act as the primary key.
+- `participants.json`: list of `{name, email, language, registered_at}` (`language` is missing for people who registered before i18n; treat it as the default). Emails are lowercased and act as the primary key.
 - `assignments.json`: `{giver_email: {giftee_email, assigned_at}}`.
 - `config.json`: SMTP settings, `admin_password` (default `admin123`), and `assignment_exclusions`.
 
@@ -32,6 +33,21 @@ The UI and the API refer to participants by their **list index** (`excluded_indi
 ## Assignment algorithm
 
 `generate_assignments` builds the candidates for each giver (excluding self and that giver's exclusions), shuffles them, then runs augmenting-path bipartite matching (Kuhn's algorithm). The result is a random valid derangement, or it fails with "No valid assignments…". It can produce several short cycles (A↔B), which is intended. Tests make it deterministic with `patch('app.random.shuffle', lambda v: None)`.
+
+## Translations (Flask-Babel; en, de, nl, en_DE)
+
+- Every user-facing string goes through `_()` / `ngettext()`: in templates, in JSON `message`s in `app.py`, and in the email. Page scripts get their strings from a translated `T` dict rendered into each template with `|tojson`, so add JS strings there and not as literals.
+- In templates `%` must be written `%%` (Jinja newstyle gettext always applies `%`-formatting).
+- Language order of precedence: `lang` cookie (set by `/language/<code>`), then `Accept-Language`, then `DEFAULT_LANGUAGE` (env, default `en`). Add new languages to `SUPPORTED_LANGUAGES`, and to `BROWSER_LANGUAGES` if browsers may select them.
+- `en_DE` is **Denglisch**, a deliberate joke language (half German, half English, with intentional spelling and grammar errors). Don't "fix" its mistakes. It is reachable only via the switcher, never via `Accept-Language`, so real `en-DE` users get English. Locale codes contain `_`; templates convert them to BCP 47 (`en-DE`) for `lang` attributes.
+- Each participant stores the UI `language` they registered with. It is updated whenever they successfully load or save preferences on `/my-assignment` (via `/participant/exclusions`). Emails are rendered in that language via `force_locale`. `force_locale` does nothing without an app context, which is why `assign.py` runs `main()` inside `app.app_context()`.
+- After changing strings, update the catalogs, translate the new entries (remove `#, fuzzy` flags), then compile:
+  ```bash
+  .venv/bin/pybabel extract -F babel.cfg --ignore-dirs=".venv tests" -k _ --no-location --sort-output -o translations/messages.pot .
+  .venv/bin/pybabel update -i translations/messages.pot -d translations -w 0
+  .venv/bin/pybabel compile -d translations
+  ```
+  `tests/test_i18n.py` fails if a catalog is missing strings, has untranslated or fuzzy entries, or has broken `%(name)s` placeholders.
 
 ## Conventions
 

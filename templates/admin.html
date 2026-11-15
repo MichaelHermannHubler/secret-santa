@@ -1,26 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ current_language|replace('_', '-') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Secret Santa Organizer</title>
+    <title>{{ _('Admin - Secret Santa Organizer') }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>🔐 Admin Panel</h1>
+        {% include '_language_switcher.html' %}
+        <h1>🔐 {{ _('Admin Panel') }}</h1>
         
         {% if not authenticated %}
         <!-- Login Form -->
         <div class="section">
-            <h2>Admin Login</h2>
-            <p>Please enter the admin password to access the admin panel.</p>
+            <h2>{{ _('Admin Login') }}</h2>
+            <p>{{ _('Please enter the admin password to access the admin panel.') }}</p>
             <form id="loginForm" onsubmit="login(event)">
                 <div class="form-group">
-                    <label for="password">Admin Password:</label>
+                    <label for="password">{{ _('Admin Password:') }}</label>
                     <input type="password" id="password" name="password" required autofocus>
                 </div>
-                <button type="submit">Login</button>
+                <button type="submit">{{ _('Login') }}</button>
             </form>
             <div id="loginMessage" class="message"></div>
         </div>
@@ -28,17 +29,17 @@
         <!-- Admin Panel Content -->
         <div class="section">
             <div style="text-align: right; margin-bottom: 20px;">
-                <button onclick="logout()" style="background: #dc3545;">Logout</button>
+                <button onclick="logout()" style="background: #dc3545;">{{ _('Logout') }}</button>
             </div>
         </div>
         
         <div class="section">
-            <h2>Generate Assignments</h2>
-            <p>Use this form to generate Secret Santa assignments for all registered participants.</p>
+            <h2>{{ _('Generate Assignments') }}</h2>
+            <p>{{ _('Use this form to generate Secret Santa assignments for all registered participants.') }}</p>
             
             {% if assignments %}
             <div class="warning-box">
-                <strong>⚠️ Warning:</strong> Assignments already exist! Generating new assignments will overwrite existing ones.
+                <strong>⚠️ {{ _('Warning:') }}</strong> {{ _('Assignments already exist! Generating new assignments will overwrite existing ones.') }}
             </div>
             {% endif %}
             
@@ -46,21 +47,21 @@
                 <div class="form-group">
                     <label>
                         <input type="checkbox" id="skipEmail" name="skip_email" value="true">
-                        Skip sending email notifications
+                        {{ _('Skip sending email notifications') }}
                     </label>
                 </div>
-                <button type="submit">Generate Assignments</button>
+                <button type="submit">{{ _('Generate Assignments') }}</button>
             </form>
             <div id="generateMessage" class="message"></div>
             <div id="emailResults" style="display: none; margin-top: 15px;"></div>
         </div>
 
         <div class="section">
-            <h2>Registered Participants</h2>
+            <h2>{{ _('Registered Participants') }}</h2>
             <div id="participantsList">
                 {% if participants %}
-                    <p><strong>Total: {{ participants|length }} participants</strong></p>
-                    <p class="warning-box">Removing a participant clears the current assignments. Generate new assignments afterward.</p>
+                    <p><strong>{{ ngettext('Total: %(num)d participant', 'Total: %(num)d participants', participants|length) }}</strong></p>
+                    <p class="warning-box">{{ _('Removing a participant clears the current assignments. Generate new assignments afterward.') }}</p>
                     <ul>
                         {% for participant in participants %}
                             <li>
@@ -68,13 +69,13 @@
                                 <button type="button" class="remove-participant"
                                         data-email="{{ participant.email }}"
                                         style="background: #dc3545; padding: 6px 12px; font-size: 14px;">
-                                    Remove
+                                    {{ _('Remove') }}
                                 </button>
                             </li>
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p class="empty">No participants registered yet.</p>
+                    <p class="empty">{{ _('No participants registered yet.') }}</p>
                 {% endif %}
             </div>
             <div id="participantMessage" class="message"></div>
@@ -82,18 +83,28 @@
 
         {% if assignments %}
         <div class="section">
-            <h2>Current Assignments</h2>
-            <p class="status">Assignments have been generated!</p>
+            <h2>{{ _('Current Assignments') }}</h2>
+            <p class="status">{{ _('Assignments have been generated!') }}</p>
         </div>
         {% endif %}
         {% endif %}
 
         <div class="section">
-            <p><a href="/">← Back to Home</a></p>
+            <p><a href="/">← {{ _('Back to Home') }}</a></p>
         </div>
     </div>
 
     <script>
+        const T = {{ {
+            'genericError': _('An error occurred. Please try again.'),
+            'loggingIn': _('Logging in...'),
+            'confirmRemove': _('Remove %(email)s? This will clear current assignments.', email='__EMAIL__'),
+            'removing': _('Removing participant...'),
+            'removeFailed': _('Could not remove participant.'),
+            'generating': _('Generating assignments...'),
+            'emailNotifications': _('Email Notifications:')
+        }|tojson }};
+
         {% if not authenticated %}
         function login(event) {
             event.preventDefault();
@@ -101,7 +112,7 @@
             const formData = new FormData(form);
             const messageDiv = document.getElementById('loginMessage');
             
-            messageDiv.textContent = 'Logging in...';
+            messageDiv.textContent = T.loggingIn;
             messageDiv.className = 'message';
             messageDiv.style.display = 'block';
             
@@ -123,19 +134,19 @@
                 }
             })
             .catch(error => {
-                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.textContent = T.genericError;
                 messageDiv.className = 'message error';
             });
         }
         {% else %}
         document.querySelectorAll('.remove-participant').forEach(button => {
             button.addEventListener('click', async () => {
-                if (!confirm(`Remove ${button.dataset.email}? This will clear current assignments.`)) {
+                if (!confirm(T.confirmRemove.replace('__EMAIL__', button.dataset.email))) {
                     return;
                 }
 
                 const messageDiv = document.getElementById('participantMessage');
-                messageDiv.textContent = 'Removing participant...';
+                messageDiv.textContent = T.removing;
                 messageDiv.className = 'message';
                 messageDiv.style.display = 'block';
 
@@ -147,13 +158,13 @@
                     });
                     const data = await response.json();
                     if (!response.ok || !data.success) {
-                        throw new Error(data.message || 'Could not remove participant.');
+                        throw new Error(data.message || T.removeFailed);
                     }
                     messageDiv.textContent = data.message;
                     messageDiv.className = 'message success';
                     setTimeout(() => location.reload(), 1200);
                 } catch (error) {
-                    messageDiv.textContent = error.message || 'An error occurred. Please try again.';
+                    messageDiv.textContent = error.message || T.genericError;
                     messageDiv.className = 'message error';
                 }
             });
@@ -187,7 +198,7 @@
                 formData.set('skip_email', 'true');
             }
             
-            messageDiv.textContent = 'Generating assignments...';
+            messageDiv.textContent = T.generating;
             messageDiv.className = 'message';
             messageDiv.style.display = 'block';
             
@@ -205,7 +216,7 @@
                     if (data.email_results && data.email_results.length > 0) {
                         // Build nodes with textContent: participant names are user input.
                         const heading = document.createElement('h3');
-                        heading.textContent = 'Email Notifications:';
+                        heading.textContent = T.emailNotifications;
                         const list = document.createElement('ul');
                         list.style.listStyle = 'none';
                         list.style.padding = '0';
@@ -237,7 +248,7 @@
                 }
             })
             .catch(error => {
-                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.textContent = T.genericError;
                 messageDiv.className = 'message error';
             });
         }

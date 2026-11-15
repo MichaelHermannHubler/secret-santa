@@ -11,6 +11,10 @@ COPY app.py .
 COPY assign.py .
 COPY templates/ ./templates/
 COPY static/ ./static/
+COPY translations/ ./translations/
+
+# Compile translation catalogs (.po -> .mo); compiled files are not committed
+RUN pybabel compile -d translations
 
 # Create data directory
 RUN mkdir -p /app/data

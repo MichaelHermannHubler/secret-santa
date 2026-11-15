@@ -1,0 +1,9 @@
+<nav class="language-switcher" aria-label="{{ _('Language') }}">
+    {% for code, label in supported_languages.items() %}
+        {% if code == current_language %}
+            <strong aria-current="true" lang="{{ code|replace('_', '-') }}">{{ label }}</strong>
+        {% else %}
+            <a href="{{ url_for('set_language', code=code, next=request.path) }}" lang="{{ code|replace('_', '-') }}" hreflang="{{ code|replace('_', '-') }}">{{ label }}</a>
+        {% endif %}
+    {% endfor %}
+</nav>

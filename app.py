@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, jsonify, redirect, url_for, session
+from flask import (Flask, render_template, request, jsonify, redirect, url_for,
+                   session, has_request_context)
+from flask_babel import Babel, force_locale, gettext as _, ngettext
 import json
 import os
 import random
@@ -10,6 +12,38 @@ import secrets
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', secrets.token_hex(16))
+
+SUPPORTED_LANGUAGES = {
+    'en': 'English',
+    'de': 'Deutsch',
+    'nl': 'Nederlands',
+    'en_DE': 'Denglisch',  # joke language: half German, half English, deliberately misspelled
+}
+# Languages a browser's Accept-Language may select. Denglisch is opt-in via the
+# switcher only, so a real "en-DE" browser setting still gets proper English.
+BROWSER_LANGUAGES = ['en', 'de', 'nl']
+DEFAULT_LANGUAGE = os.environ.get('DEFAULT_LANGUAGE', 'en')
+if DEFAULT_LANGUAGE not in BROWSER_LANGUAGES:
+    DEFAULT_LANGUAGE = 'en'
+LANGUAGE_COOKIE = 'lang'
+
+def get_locale():
+    """Pick the UI language: explicit cookie choice, then browser preference."""
+    if not has_request_context():
+        return DEFAULT_LANGUAGE
+    chosen = request.cookies.get(LANGUAGE_COOKIE)
+    if chosen in SUPPORTED_LANGUAGES:
+        return chosen
+    return request.accept_languages.best_match(BROWSER_LANGUAGES) or DEFAULT_LANGUAGE
+
+babel = Babel(app, locale_selector=get_locale)
+
+@app.context_processor
+def inject_languages():
+    return {
+        'current_language': get_locale(),
+        'supported_languages': SUPPORTED_LANGUAGES,
+    }
 
 DATA_DIR = 'data'
 PARTICIPANTS_FILE = os.path.join(DATA_DIR, 'participants.json')
@@ -64,21 +98,21 @@ def save_config(config):
 def normalize_exclusion_pairs(pairs, participant_emails, ignore_missing=False):
     """Validate and normalize directed assignment exclusions."""
     if not isinstance(pairs, list):
-        raise ValueError('Assignment exclusions must be a list')
+        raise ValueError(_('Assignment exclusions must be a list'))
 
     participant_emails = set(participant_emails)
     normalized_pairs = set()
     for pair in pairs:
         if (not isinstance(pair, (list, tuple)) or len(pair) != 2 or
                 not all(isinstance(email, str) for email in pair)):
-            raise ValueError('Each assignment exclusion must contain two participant emails')
+            raise ValueError(_('Each assignment exclusion must contain two participant emails'))
         first_email, second_email = pair
         if first_email == second_email:
-            raise ValueError('A participant cannot be excluded from themselves')
+            raise ValueError(_('A participant cannot be excluded from themselves'))
         if first_email not in participant_emails or second_email not in participant_emails:
             if ignore_missing:
                 continue
-            raise ValueError('Assignment exclusions must refer to registered participants')
+            raise ValueError(_('Assignment exclusions must refer to registered participants'))
         normalized_pairs.add((first_email, second_email))
 
     return sorted(normalized_pairs)
@@ -86,20 +120,20 @@ def normalize_exclusion_pairs(pairs, participant_emails, ignore_missing=False):
 def parse_participant_indices(raw_indices, participant_count, own_index=None):
     """Validate participant indices submitted for one participant's exclusions."""
     if not isinstance(raw_indices, list):
-        raise ValueError('Excluded participants must be provided as a list')
+        raise ValueError(_('Excluded participants must be provided as a list'))
 
     indices = set()
     for raw_index in raw_indices:
         if isinstance(raw_index, bool) or not isinstance(raw_index, (int, str)):
-            raise ValueError('Invalid excluded participant')
+            raise ValueError(_('Invalid excluded participant'))
         try:
             index = int(raw_index)
         except ValueError:
-            raise ValueError('Invalid excluded participant')
+            raise ValueError(_('Invalid excluded participant'))
         if index < 0 or index >= participant_count:
-            raise ValueError('Invalid excluded participant')
+            raise ValueError(_('Invalid excluded participant'))
         if index == own_index:
-            raise ValueError('You cannot exclude yourself')
+            raise ValueError(_('You cannot exclude yourself'))
         indices.add(index)
     return sorted(indices)
 
@@ -110,6 +144,19 @@ def index():
     assignments = load_assignments()
     return render_template('index.html', participants=participants, assignments=assignments)
 
+@app.route('/language/<code>')
+def set_language(code):
+    """Remember the chosen UI language in a cookie and return to the page."""
+    target = request.args.get('next', '/')
+    # Only allow local paths to avoid an open redirect.
+    if not target.startswith('/') or target.startswith('//') or '\\' in target:
+        target = '/'
+    response = redirect(target)
+    if code in SUPPORTED_LANGUAGES:
+        response.set_cookie(LANGUAGE_COOKIE, code, max_age=365 * 24 * 3600,
+                            samesite='Lax', httponly=True)
+    return response
+
 @app.route('/register', methods=['POST'])
 def register():
     """Register a new participant"""
@@ -117,16 +164,16 @@ def register():
     email = request.form.get('email', '').strip().lower()
     
     if not name or not email:
-        return jsonify({'success': False, 'message': 'Name and email are required'}), 400
+        return jsonify({'success': False, 'message': _('Name and email are required')}), 400
     
     # Basic email validation
     if '@' not in email:
-        return jsonify({'success': False, 'message': 'Invalid email format'}), 400
+        return jsonify({'success': False, 'message': _('Invalid email format')}), 400
     
     participants = load_participants()
     # Check for duplicate email
     if any(p['email'] == email for p in participants):
-        return jsonify({'success': False, 'message': 'This email is already registered'}), 400
+        return jsonify({'success': False, 'message': _('This email is already registered')}), 400
 
     try:
         excluded_indices = parse_participant_indices(
@@ -140,6 +187,7 @@ def register():
     participants.append({
         'name': name,
         'email': email,
+        'language': get_locale(),
         'registered_at': datetime.now().isoformat()
     })
 
@@ -159,12 +207,12 @@ def register():
             [participant['email'] for participant in participants]
         )
     except ValueError as error:
-        return jsonify({'success': False, 'message': f'Could not save exclusions: {error}'}), 500
+        return jsonify({'success': False, 'message': _('Could not save exclusions: %(error)s', error=error)}), 500
 
     save_participants(participants)
     save_config(config)
     
-    return jsonify({'success': True, 'message': 'Successfully registered!'})
+    return jsonify({'success': True, 'message': _('Successfully registered!')})
 
 @app.route('/my-assignment')
 def my_assignment():
@@ -180,11 +228,11 @@ def manage_participant_exclusions():
     """Read or update the directed exclusions belonging to a participant."""
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
-        return jsonify({'success': False, 'message': 'Invalid request'}), 400
+        return jsonify({'success': False, 'message': _('Invalid request')}), 400
 
     email = data.get('email')
     if not isinstance(email, str) or not email.strip():
-        return jsonify({'success': False, 'message': 'A registered email is required'}), 400
+        return jsonify({'success': False, 'message': _('A registered email is required')}), 400
     email = email.strip().lower()
     participants = load_participants()
     participant_index = next(
@@ -193,7 +241,7 @@ def manage_participant_exclusions():
         None
     )
     if participant_index is None:
-        return jsonify({'success': False, 'message': 'No participant found for this email'}), 404
+        return jsonify({'success': False, 'message': _('No participant found for this email')}), 404
 
     config = load_config()
     try:
@@ -223,9 +271,17 @@ def manage_participant_exclusions():
     except ValueError as error:
         return jsonify({'success': False, 'message': str(error)}), 400
 
+    # Remember the language the participant currently uses for their emails.
+    # This lets people who registered before i18n (no stored language) or who
+    # changed language later pick it up just by visiting their preferences.
+    language = get_locale()
+    if participants[participant_index].get('language') != language:
+        participants[participant_index]['language'] = language
+        save_participants(participants)
+
     return jsonify({
         'success': True,
-        'message': 'Your assignment exclusions have been saved.',
+        'message': _('Your assignment exclusions have been saved.'),
         'participant_index': participant_index,
         'excluded_indices': [
             index for index, participant in enumerate(participants)
@@ -239,19 +295,19 @@ def check_assignment():
     email = request.form.get('email', '').strip().lower()
     
     if not email:
-        return jsonify({'success': False, 'message': 'Email is required'}), 400
+        return jsonify({'success': False, 'message': _('Email is required')}), 400
     
     assignments = load_assignments()
     
     if email not in assignments:
-        return jsonify({'success': False, 'message': 'No assignment found for this email'}), 404
+        return jsonify({'success': False, 'message': _('No assignment found for this email')}), 404
     
     assignment = assignments[email]
     participants = load_participants()
     giftee = next((p for p in participants if p['email'] == assignment['giftee_email']), None)
     
     if not giftee:
-        return jsonify({'success': False, 'message': 'Assignment found but giftee not found'}), 404
+        return jsonify({'success': False, 'message': _('Assignment found but giftee not found')}), 404
     
     return jsonify({
         'success': True,
@@ -279,34 +335,34 @@ def admin_login():
     # Verify password
     if password == config.get('admin_password', 'admin123'):
         session['admin_authenticated'] = True
-        return jsonify({'success': True, 'message': 'Authentication successful'})
+        return jsonify({'success': True, 'message': _('Authentication successful')})
     else:
-        return jsonify({'success': False, 'message': 'Invalid password'}), 401
+        return jsonify({'success': False, 'message': _('Invalid password')}), 401
 
 @app.route('/admin/logout', methods=['POST'])
 def admin_logout():
     """Logout admin user"""
     session.pop('admin_authenticated', None)
-    return jsonify({'success': True, 'message': 'Logged out successfully'})
+    return jsonify({'success': True, 'message': _('Logged out successfully')})
 
 @app.route('/admin/participants/remove', methods=['POST'])
 def remove_participant():
     """Remove a registered participant and reset assignments."""
     if not session.get('admin_authenticated'):
-        return jsonify({'success': False, 'message': 'Not authenticated. Please log in first.'}), 401
+        return jsonify({'success': False, 'message': _('Not authenticated. Please log in first.')}), 401
 
     data = request.get_json(silent=True)
     if not isinstance(data, dict):
-        return jsonify({'success': False, 'message': 'Invalid request'}), 400
+        return jsonify({'success': False, 'message': _('Invalid request')}), 400
 
     email = data.get('email')
     if not isinstance(email, str) or not email.strip():
-        return jsonify({'success': False, 'message': 'A participant email is required'}), 400
+        return jsonify({'success': False, 'message': _('A participant email is required')}), 400
     email = email.strip().lower()
 
     participants = load_participants()
     if not any(participant['email'] == email for participant in participants):
-        return jsonify({'success': False, 'message': 'Participant not found'}), 404
+        return jsonify({'success': False, 'message': _('Participant not found')}), 404
 
     remaining_participants = [
         participant for participant in participants if participant['email'] != email
@@ -332,7 +388,7 @@ def remove_participant():
 
     return jsonify({
         'success': True,
-        'message': 'Participant removed. Generate assignments again to notify the remaining participants.'
+        'message': _('Participant removed. Generate assignments again to notify the remaining participants.')
     })
 
 @app.route('/generate-assignments', methods=['POST'])
@@ -340,7 +396,7 @@ def generate_assignments_web():
     """Generate assignments via web interface"""
     # Check if user is authenticated
     if not session.get('admin_authenticated'):
-        return jsonify({'success': False, 'message': 'Not authenticated. Please log in first.'}), 401
+        return jsonify({'success': False, 'message': _('Not authenticated. Please log in first.')}), 401
     
     skip_email = request.form.get('skip_email', 'false') == 'true'
     
@@ -369,7 +425,8 @@ def generate_assignments_web():
                             participant['email'],
                             participant['name'],
                             giftee['name'],
-                            giftee['email']
+                            giftee['email'],
+                            participant.get('language')
                         )
                         email_results.append({
                             'participant': participant['name'],
@@ -379,15 +436,19 @@ def generate_assignments_web():
                         })
         else:
             email_results.append({
-                'participant': 'System',
+                'participant': _('System'),
                 'email': '',
                 'success': False,
-                'message': 'Email configuration not set'
+                'message': _('Email configuration not set')
             })
     
     return jsonify({
         'success': True,
-        'message': f'Successfully generated assignments for {len(assignments)} participants!',
+        'message': ngettext(
+            'Successfully generated assignments for %(num)d participant!',
+            'Successfully generated assignments for %(num)d participants!',
+            len(assignments)
+        ),
         'email_results': email_results,
         'skip_email': skip_email
     })
@@ -397,7 +458,7 @@ def generate_assignments():
     participants = load_participants()
     
     if len(participants) < 2:
-        return False, 'Need at least 2 participants to generate assignments'
+        return False, _('Need at least 2 participants to generate assignments')
     
     config = load_config()
     try:
@@ -407,7 +468,7 @@ def generate_assignments():
             ignore_missing=True
         )
     except ValueError as error:
-        return False, f'Invalid assignment exclusions: {error}'
+        return False, _('Invalid assignment exclusions: %(error)s', error=error)
 
     excluded_emails = {email: set() for email in (p['email'] for p in participants)}
     for participant_email, excluded_email in exclusion_pairs:
@@ -440,7 +501,7 @@ def generate_assignments():
 
     for giver_index in giver_order:
         if not find_recipient(giver_index, set()):
-            return False, 'No valid assignments are possible with the current exclusions. Remove some exclusions and try again.'
+            return False, _('No valid assignments are possible with the current exclusions. Remove some exclusions and try again.')
 
     # Create assignments
     assignments = {}
@@ -455,42 +516,49 @@ def generate_assignments():
     save_assignments(assignments)
     return True, assignments
 
-def send_email_notification(participant_email, participant_name, giftee_name, giftee_email):
-    """Send email notification to participant"""
+def send_email_notification(participant_email, participant_name, giftee_name, giftee_email,
+                            language=None):
+    """Send email notification to participant, in the language they registered with.
+
+    Must run inside an app or request context, otherwise the text stays English.
+    """
     config = load_config()
-    
+
     if not config.get('email') or not config.get('password'):
-        return False, 'Email configuration not set'
-    
+        return False, _('Email configuration not set')
+
+    if language not in SUPPORTED_LANGUAGES:
+        language = DEFAULT_LANGUAGE
+
     try:
+        with force_locale(language):
+            subject = _('Your Secret Santa Assignment!')
+            body = _(
+                'Hello %(name)s!\n\n'
+                'Your Secret Santa assignment has been made!\n\n'
+                'You are gifting to: %(giftee)s\n\n'
+                'Remember to keep this secret! 🎁\n\n'
+                'Happy gifting!',
+                name=participant_name,
+                giftee=giftee_name
+            )
+
         msg = MIMEMultipart()
         msg['From'] = config['email']
         msg['To'] = participant_email
-        msg['Subject'] = 'Your Secret Santa Assignment!'
-        
-        body = f"""
-Hello {participant_name}!
+        msg['Subject'] = subject
+        msg.attach(MIMEText(body, 'plain', 'utf-8'))
 
-Your Secret Santa assignment has been made!
-
-You are gifting to: {giftee_name}
-
-Remember to keep this secret! 🎁
-
-Happy gifting!
-"""
-        msg.attach(MIMEText(body, 'plain'))
-        
         server = smtplib.SMTP(config['smtp_server'], config['smtp_port'])
         server.starttls()
         server.login(config['email'], config['password'])
         text = msg.as_string()
         server.sendmail(config['email'], participant_email, text)
         server.quit()
-        
-        return True, 'Email sent successfully'
+
+        return True, _('Email sent successfully')
     except Exception as e:
-        return False, f'Failed to send email: {str(e)}'
+        return False, _('Failed to send email: %(error)s', error=str(e))
 
 if __name__ == '__main__':
     # Local development only; the Docker image serves the app with gunicorn.

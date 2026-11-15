@@ -1,41 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ current_language|replace('_', '-') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Secret Santa Assignment</title>
+    <title>{{ _('My Secret Santa Assignment') }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>🎁 My Secret Santa Assignment</h1>
+        {% include '_language_switcher.html' %}
+        <h1>🎁 {{ _('My Secret Santa Assignment') }}</h1>
         
         <div class="section">
-            <p>Enter your email to view your Secret Santa assignment:</p>
+            <p>{{ _('Enter your email to view your Secret Santa assignment:') }}</p>
             <form id="checkForm" onsubmit="checkAssignment(event)">
                 <div class="form-group">
-                    <label for="email">Your Email:</label>
+                    <label for="email">{{ _('Your Email:') }}</label>
                     <input type="email" id="email" name="email" required>
                 </div>
-                <button type="submit">View Assignment</button>
+                <button type="submit">{{ _('View Assignment') }}</button>
             </form>
             <div id="assignmentMessage" class="message"></div>
         </div>
 
         <div class="section">
-            <h2>Manage Assignment Exclusions</h2>
-            <p>Enter your registered email to choose who you should not draw. These exclusions are one-way and apply the next time assignments are generated.</p>
+            <h2>{{ _('Manage Assignment Exclusions') }}</h2>
+            <p>{{ _('Enter your registered email to choose who you should not draw. These exclusions are one-way and apply the next time assignments are generated.') }}</p>
             <form id="exclusionLookupForm" onsubmit="loadExclusions(event)">
                 <div class="form-group">
-                    <label for="exclusionEmail">Your registered email:</label>
+                    <label for="exclusionEmail">{{ _('Your registered email:') }}</label>
                     <input type="email" id="exclusionEmail" required>
                 </div>
-                <button type="submit">Load My Preferences</button>
+                <button type="submit">{{ _('Load My Preferences') }}</button>
             </form>
             <div id="exclusionEditor" style="display: none;">
                 <form id="exclusionForm" onsubmit="saveExclusions(event)">
                     <div class="form-group">
-                        <label>People you do not want to be assigned:</label>
+                        <label>{{ _('People you do not want to be assigned:') }}</label>
                         {% for name in participant_names %}
                         <label data-participant-index="{{ loop.index0 }}">
                             <input type="checkbox" name="excluded_indices" value="{{ loop.index0 }}">
@@ -43,33 +44,41 @@
                         </label>
                         {% endfor %}
                     </div>
-                    <button type="submit">Save Preferences</button>
+                    <button type="submit">{{ _('Save Preferences') }}</button>
                 </form>
             </div>
             <div id="exclusionMessage" class="message"></div>
         </div>
 
         <div id="assignmentResult" class="section" style="display: none;">
-            <h2>Your Assignment</h2>
+            <h2>{{ _('Your Assignment') }}</h2>
             <div class="assignment-box">
-                <p><strong>You are gifting to:</strong></p>
+                <p><strong>{{ _('You are gifting to:') }}</strong></p>
                 <p class="giftee-name" id="gifteeName"></p>
             </div>
         </div>
 
         <div class="section">
-            <p><a href="/">← Back to Home</a></p>
+            <p><a href="/">← {{ _('Back to Home') }}</a></p>
         </div>
     </div>
 
     <script>
+        const T = {{ {
+            'genericError': _('An error occurred. Please try again.'),
+            'loading': _('Loading preferences...'),
+            'loadFailed': _('Could not load preferences.'),
+            'saving': _('Saving preferences...'),
+            'saveFailed': _('Could not save preferences.')
+        }|tojson }};
+
         let participantEmail = '';
 
         async function loadExclusions(event) {
             event.preventDefault();
             participantEmail = document.getElementById('exclusionEmail').value.trim().toLowerCase();
             const messageDiv = document.getElementById('exclusionMessage');
-            messageDiv.textContent = 'Loading preferences...';
+            messageDiv.textContent = T.loading;
             messageDiv.className = 'message';
             messageDiv.style.display = 'block';
 
@@ -81,7 +90,7 @@
                 });
                 const data = await response.json();
                 if (!response.ok || !data.success) {
-                    throw new Error(data.message || 'Could not load preferences.');
+                    throw new Error(data.message || T.loadFailed);
                 }
 
                 document.querySelectorAll('#exclusionForm [data-participant-index]').forEach(label => {
@@ -95,7 +104,7 @@
                 messageDiv.className = 'message';
             } catch (error) {
                 document.getElementById('exclusionEditor').style.display = 'none';
-                messageDiv.textContent = error.message || 'An error occurred. Please try again.';
+                messageDiv.textContent = error.message || T.genericError;
                 messageDiv.className = 'message error';
             }
         }
@@ -107,7 +116,7 @@
                 document.querySelectorAll('#exclusionForm input[name="excluded_indices"]:checked'),
                 checkbox => Number(checkbox.value)
             );
-            messageDiv.textContent = 'Saving preferences...';
+            messageDiv.textContent = T.saving;
             messageDiv.className = 'message';
             messageDiv.style.display = 'block';
 
@@ -122,12 +131,12 @@
                 });
                 const data = await response.json();
                 if (!response.ok || !data.success) {
-                    throw new Error(data.message || 'Could not save preferences.');
+                    throw new Error(data.message || T.saveFailed);
                 }
                 messageDiv.textContent = data.message;
                 messageDiv.className = 'message success';
             } catch (error) {
-                messageDiv.textContent = error.message || 'An error occurred. Please try again.';
+                messageDiv.textContent = error.message || T.genericError;
                 messageDiv.className = 'message error';
             }
         }
@@ -157,7 +166,7 @@
                 }
             })
             .catch(error => {
-                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.textContent = T.genericError;
                 messageDiv.className = 'message error';
                 resultDiv.style.display = 'none';
             });

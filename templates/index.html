@@ -1,30 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ current_language|replace('_', '-') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secret Santa Organizer</title>
+    <title>{{ _('Secret Santa Organizer') }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>🎅 Secret Santa Organizer</h1>
+        {% include '_language_switcher.html' %}
+        <h1>🎅 {{ _('Secret Santa Organizer') }}</h1>
         
         <div class="section">
-            <h2>Register for Secret Santa</h2>
+            <h2>{{ _('Register for Secret Santa') }}</h2>
             <form id="registerForm" onsubmit="registerParticipant(event)">
                 <div class="form-group">
-                    <label for="name">Name:</label>
+                    <label for="name">{{ _('Name:') }}</label>
                     <input type="text" id="name" name="name" required>
                 </div>
                 <div class="form-group">
-                    <label for="email">Email:</label>
+                    <label for="email">{{ _('Email:') }}</label>
                     <input type="email" id="email" name="email" required>
                 </div>
                 {% if participants %}
                 <div class="form-group">
-                    <label>People you do not want to be assigned:</label>
-                    <p>Select any participants you should not draw. This preference is one-way.</p>
+                    <label>{{ _('People you do not want to be assigned:') }}</label>
+                    <p>{{ _('Select any participants you should not draw. This preference is one-way.') }}</p>
                     {% for participant in participants %}
                     <label>
                         <input type="checkbox" name="excluded_indices" value="{{ loop.index0 }}">
@@ -33,13 +34,13 @@
                     {% endfor %}
                 </div>
                 {% endif %}
-                <button type="submit">Register</button>
+                <button type="submit">{{ _('Register') }}</button>
             </form>
             <div id="registerMessage" class="message"></div>
         </div>
 
         <div class="section">
-            <h2>Registered Participants</h2>
+            <h2>{{ _('Registered Participants') }}</h2>
             <div id="participantsList">
                 {% if participants %}
                     <ul>
@@ -48,31 +49,35 @@
                         {% endfor %}
                     </ul>
                 {% else %}
-                    <p class="empty">No participants registered yet.</p>
+                    <p class="empty">{{ _('No participants registered yet.') }}</p>
                 {% endif %}
             </div>
         </div>
 
         <div class="section">
-            <h2>Check Your Assignment</h2>
-            <p><a href="/my-assignment">Click here to view your Secret Santa assignment</a></p>
-            <p>You can also update your assignment exclusions from that page.</p>
+            <h2>{{ _('Check Your Assignment') }}</h2>
+            <p><a href="/my-assignment">{{ _('Click here to view your Secret Santa assignment') }}</a></p>
+            <p>{{ _('You can also update your assignment exclusions from that page.') }}</p>
         </div>
 
         <div class="section">
-            <h2>Admin</h2>
-            <p><a href="/admin">Admin Panel - Generate Assignments</a></p>
+            <h2>{{ _('Admin') }}</h2>
+            <p><a href="/admin">{{ _('Admin Panel - Generate Assignments') }}</a></p>
         </div>
 
         {% if assignments %}
         <div class="section">
-            <h2>Status</h2>
-            <p class="status">Assignments have been made! Check your email or use the link above to view your assignment.</p>
+            <h2>{{ _('Status') }}</h2>
+            <p class="status">{{ _('Assignments have been made! Check your email or use the link above to view your assignment.') }}</p>
         </div>
         {% endif %}
     </div>
 
     <script>
+        const T = {{ {
+            'genericError': _('An error occurred. Please try again.')
+        }|tojson }};
+
         function registerParticipant(event) {
             event.preventDefault();
             const form = event.target;
@@ -98,7 +103,7 @@
                 }
             })
             .catch(error => {
-                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.textContent = T.genericError;
                 messageDiv.className = 'message error';
             });
         }
