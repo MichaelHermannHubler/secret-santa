@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: secret-santa VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-15 20:34+0100\n"
+"POT-Creation-Date: 2026-11-15 20:48+0100\n"
 "PO-Revision-Date: 2026-11-15 20:35+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: nl\n"
@@ -116,8 +116,8 @@ msgstr "E-mail:"
 msgid "Enter your email to view your Secret Santa assignment:"
 msgstr "Vul je e-mailadres in om te zien wie je hebt getrokken:"
 
-msgid "Enter your registered email to choose who you should not draw. These exclusions are one-way and apply the next time assignments are generated."
-msgstr "Vul je geregistreerde e-mailadres in om te kiezen wie je niet wilt trekken. Deze uitsluitingen gelden maar in één richting en tellen mee bij de volgende trekking."
+msgid "Enter your registered email to update your gift wishes and choose who you should not draw. Exclusions are one-way and apply the next time assignments are generated."
+msgstr "Vul je geregistreerde e-mailadres in om je cadeauwensen aan te passen en te kiezen wie je niet wilt trekken. Uitsluitingen gelden maar in één richting en tellen mee bij de volgende trekking."
 
 msgid "Excluded participants must be provided as a list"
 msgstr "Uitgesloten deelnemers moeten als lijst worden opgegeven"
@@ -133,26 +133,25 @@ msgid "Generating assignments..."
 msgstr "Lootjes worden getrokken…"
 
 #, python-format
+msgid "Gift preferences can be at most %(max)d characters long"
+msgstr "Cadeauwensen mogen maximaal %(max)d tekens lang zijn"
+
+msgid "Gift preferences must be text"
+msgstr "Cadeauwensen moeten tekst zijn"
+
+#, python-format
 msgid ""
 "Hello %(name)s!\n"
 "\n"
 "Your Secret Santa assignment has been made!\n"
 "\n"
-"You are gifting to: %(giftee)s\n"
-"\n"
-"Remember to keep this secret! 🎁\n"
-"\n"
-"Happy gifting!"
+"You are gifting to: %(giftee)s"
 msgstr ""
 "Hallo %(name)s!\n"
 "\n"
 "De lootjes voor Secret Santa zijn getrokken!\n"
 "\n"
-"Jij koopt een cadeau voor: %(giftee)s\n"
-"\n"
-"Houd het geheim! 🎁\n"
-"\n"
-"Veel plezier met shoppen!"
+"Jij koopt een cadeau voor: %(giftee)s"
 
 #, python-format
 msgid "Invalid assignment exclusions: %(error)s"
@@ -191,8 +190,8 @@ msgstr "Inloggen"
 msgid "Logout"
 msgstr "Uitloggen"
 
-msgid "Manage Assignment Exclusions"
-msgstr "Uitsluitingen beheren"
+msgid "My Preferences"
+msgstr "Mijn wensen en voorkeuren"
 
 msgid "My Secret Santa Assignment"
 msgstr "Mijn Secret Santa-lootje"
@@ -208,6 +207,9 @@ msgstr "Er zijn minstens 2 deelnemers nodig om lootjes te trekken"
 
 msgid "No assignment found for this email"
 msgstr "Geen lootje gevonden voor dit e-mailadres"
+
+msgid "No gift wishes entered yet. Check back later!"
+msgstr "Nog geen cadeauwensen ingevuld. Kijk later nog eens!"
 
 msgid "No participant found for this email"
 msgstr "Geen deelnemer gevonden met dit e-mailadres"
@@ -230,6 +232,13 @@ msgstr "Deelnemer verwijderd. Trek de lootjes opnieuw om de overige deelnemers o
 msgid "People you do not want to be assigned:"
 msgstr "Mensen die je niet wilt trekken:"
 
+msgid "Please avoid:"
+msgstr "Liever niet:"
+
+#, python-format
+msgid "Please avoid: %(dislikes)s"
+msgstr "Liever niet: %(dislikes)s"
+
 msgid "Please enter the admin password to access the admin panel."
 msgstr "Vul het beheerderswachtwoord in om het beheerpaneel te openen."
 
@@ -241,6 +250,15 @@ msgstr "Aanmelden voor Secret Santa"
 
 msgid "Registered Participants"
 msgstr "Aangemelde deelnemers"
+
+msgid ""
+"Remember to keep this secret! 🎁\n"
+"\n"
+"Happy gifting!"
+msgstr ""
+"Houd het geheim! 🎁\n"
+"\n"
+"Veel plezier met shoppen!"
 
 msgid "Remove"
 msgstr "Verwijderen"
@@ -285,6 +303,22 @@ msgstr "Succesvol aangemeld!"
 msgid "System"
 msgstr "Systeem"
 
+msgid "The person who draws you will see this."
+msgstr "Degene die jou trekt, ziet dit."
+
+msgid "They like:"
+msgstr "Vindt leuk:"
+
+#, python-format
+msgid "They like: %(likes)s"
+msgstr "Vindt leuk: %(likes)s"
+
+msgid "Things you like (optional):"
+msgstr "Wat je leuk vindt (optioneel):"
+
+msgid "Things you would rather not get (optional):"
+msgstr "Wat je liever niet krijgt (optioneel):"
+
 msgid "This email is already registered"
 msgstr "Dit e-mailadres is al aangemeld"
 
@@ -303,11 +337,14 @@ msgstr "Lootje bekijken"
 msgid "Warning:"
 msgstr "Let op:"
 
+msgid "Wishes can still change, so check the website for the latest version."
+msgstr "De wensen kunnen nog veranderen, dus kijk op de website voor de nieuwste versie."
+
 msgid "You are gifting to:"
 msgstr "Jij koopt een cadeau voor:"
 
-msgid "You can also update your assignment exclusions from that page."
-msgstr "Op die pagina kun je ook je uitsluitingen aanpassen."
+msgid "You can also update your wishes and exclusions from that page."
+msgstr "Op die pagina kun je ook je wensen en uitsluitingen aanpassen."
 
 msgid "You cannot exclude yourself"
 msgstr "Je kunt jezelf niet uitsluiten"
@@ -321,9 +358,15 @@ msgstr "Jouw e-mailadres:"
 msgid "Your Secret Santa Assignment!"
 msgstr "Jouw Secret Santa-lootje!"
 
-msgid "Your assignment exclusions have been saved."
-msgstr "Je uitsluitingen zijn opgeslagen."
+msgid "Your preferences have been saved."
+msgstr "Je voorkeuren zijn opgeslagen."
 
 msgid "Your registered email:"
 msgstr "Je geregistreerde e-mailadres:"
+
+msgid "e.g. board games, dark chocolate, crime novels"
+msgstr "bijv. bordspellen, pure chocolade, detectives"
+
+msgid "e.g. scented candles, socks, anything with alcohol"
+msgstr "bijv. geurkaarsen, sokken, alles met alcohol"
 

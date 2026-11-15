@@ -22,6 +22,17 @@
                     <label for="email">{{ _('Email:') }}</label>
                     <input type="email" id="email" name="email" required>
                 </div>
+                <div class="form-group">
+                    <label for="likes">{{ _('Things you like (optional):') }}</label>
+                    <textarea id="likes" name="likes" maxlength="{{ max_preference_length }}" rows="3"
+                              placeholder="{{ _('e.g. board games, dark chocolate, crime novels') }}"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="dislikes">{{ _('Things you would rather not get (optional):') }}</label>
+                    <textarea id="dislikes" name="dislikes" maxlength="{{ max_preference_length }}" rows="3"
+                              placeholder="{{ _('e.g. scented candles, socks, anything with alcohol') }}"></textarea>
+                    <p class="hint">{{ _('The person who draws you will see this.') }}</p>
+                </div>
                 {% if participants %}
                 <div class="form-group">
                     <label>{{ _('People you do not want to be assigned:') }}</label>
@@ -57,7 +68,7 @@
         <div class="section">
             <h2>{{ _('Check Your Assignment') }}</h2>
             <p><a href="/my-assignment">{{ _('Click here to view your Secret Santa assignment') }}</a></p>
-            <p>{{ _('You can also update your assignment exclusions from that page.') }}</p>
+            <p>{{ _('You can also update your wishes and exclusions from that page.') }}</p>
         </div>
 
         <div class="section">

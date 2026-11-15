@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: secret-santa VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-11-15 20:34+0100\n"
+"POT-Creation-Date: 2026-11-15 20:48+0100\n"
 "PO-Revision-Date: 2026-11-15 20:35+0100\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -116,8 +116,8 @@ msgstr "E-Mail:"
 msgid "Enter your email to view your Secret Santa assignment:"
 msgstr "Gib deine E-Mail-Adresse ein, um zu sehen, wen du beschenkst:"
 
-msgid "Enter your registered email to choose who you should not draw. These exclusions are one-way and apply the next time assignments are generated."
-msgstr "Gib deine registrierte E-Mail-Adresse ein, um festzulegen, wen du nicht ziehen möchtest. Diese Ausschlüsse gelten nur in eine Richtung und werden bei der nächsten Auslosung berücksichtigt."
+msgid "Enter your registered email to update your gift wishes and choose who you should not draw. Exclusions are one-way and apply the next time assignments are generated."
+msgstr "Gib deine registrierte E-Mail-Adresse ein, um deine Geschenkwünsche zu ändern und festzulegen, wen du nicht ziehen möchtest. Ausschlüsse gelten nur in eine Richtung und werden bei der nächsten Auslosung berücksichtigt."
 
 msgid "Excluded participants must be provided as a list"
 msgstr "Ausgeschlossene Personen müssen als Liste angegeben werden"
@@ -133,26 +133,25 @@ msgid "Generating assignments..."
 msgstr "Zuteilungen werden erstellt …"
 
 #, python-format
+msgid "Gift preferences can be at most %(max)d characters long"
+msgstr "Geschenkwünsche dürfen höchstens %(max)d Zeichen lang sein"
+
+msgid "Gift preferences must be text"
+msgstr "Geschenkwünsche müssen Text sein"
+
+#, python-format
 msgid ""
 "Hello %(name)s!\n"
 "\n"
 "Your Secret Santa assignment has been made!\n"
 "\n"
-"You are gifting to: %(giftee)s\n"
-"\n"
-"Remember to keep this secret! 🎁\n"
-"\n"
-"Happy gifting!"
+"You are gifting to: %(giftee)s"
 msgstr ""
 "Hallo %(name)s!\n"
 "\n"
 "Die Wichtel-Auslosung ist erfolgt!\n"
 "\n"
-"Du beschenkst: %(giftee)s\n"
-"\n"
-"Verrate es niemandem! 🎁\n"
-"\n"
-"Viel Spaß beim Schenken!"
+"Du beschenkst: %(giftee)s"
 
 #, python-format
 msgid "Invalid assignment exclusions: %(error)s"
@@ -191,8 +190,8 @@ msgstr "Anmelden"
 msgid "Logout"
 msgstr "Abmelden"
 
-msgid "Manage Assignment Exclusions"
-msgstr "Ausschlüsse verwalten"
+msgid "My Preferences"
+msgstr "Meine Wünsche & Einstellungen"
 
 msgid "My Secret Santa Assignment"
 msgstr "Meine Wichtel-Zuteilung"
@@ -208,6 +207,9 @@ msgstr "Für die Auslosung werden mindestens 2 Teilnehmende benötigt"
 
 msgid "No assignment found for this email"
 msgstr "Für diese E-Mail-Adresse wurde keine Zuteilung gefunden"
+
+msgid "No gift wishes entered yet. Check back later!"
+msgstr "Noch keine Geschenkwünsche eingetragen. Schau später noch einmal vorbei!"
 
 msgid "No participant found for this email"
 msgstr "Für diese E-Mail-Adresse ist niemand registriert"
@@ -230,6 +232,13 @@ msgstr "Person entfernt. Erstelle die Zuteilungen neu, um die übrigen Teilnehme
 msgid "People you do not want to be assigned:"
 msgstr "Personen, die du nicht ziehen möchtest:"
 
+msgid "Please avoid:"
+msgstr "Bitte lieber nicht:"
+
+#, python-format
+msgid "Please avoid: %(dislikes)s"
+msgstr "Bitte lieber nicht: %(dislikes)s"
+
 msgid "Please enter the admin password to access the admin panel."
 msgstr "Bitte gib das Admin-Passwort ein, um den Verwaltungsbereich zu öffnen."
 
@@ -241,6 +250,15 @@ msgstr "Zum Wichteln anmelden"
 
 msgid "Registered Participants"
 msgstr "Angemeldete Teilnehmende"
+
+msgid ""
+"Remember to keep this secret! 🎁\n"
+"\n"
+"Happy gifting!"
+msgstr ""
+"Verrate es niemandem! 🎁\n"
+"\n"
+"Viel Spaß beim Schenken!"
 
 msgid "Remove"
 msgstr "Entfernen"
@@ -285,6 +303,22 @@ msgstr "Erfolgreich angemeldet!"
 msgid "System"
 msgstr "System"
 
+msgid "The person who draws you will see this."
+msgstr "Das sieht die Person, die dich zieht."
+
+msgid "They like:"
+msgstr "Mag gerne:"
+
+#, python-format
+msgid "They like: %(likes)s"
+msgstr "Mag gerne: %(likes)s"
+
+msgid "Things you like (optional):"
+msgstr "Was du magst (optional):"
+
+msgid "Things you would rather not get (optional):"
+msgstr "Was du lieber nicht bekommen möchtest (optional):"
+
 msgid "This email is already registered"
 msgstr "Diese E-Mail-Adresse ist bereits angemeldet"
 
@@ -303,11 +337,14 @@ msgstr "Zuteilung anzeigen"
 msgid "Warning:"
 msgstr "Achtung:"
 
+msgid "Wishes can still change, so check the website for the latest version."
+msgstr "Die Wünsche können sich noch ändern – den aktuellen Stand findest du auf der Website."
+
 msgid "You are gifting to:"
 msgstr "Du beschenkst:"
 
-msgid "You can also update your assignment exclusions from that page."
-msgstr "Dort kannst du auch deine Ausschlüsse ändern."
+msgid "You can also update your wishes and exclusions from that page."
+msgstr "Dort kannst du auch deine Wünsche und Ausschlüsse ändern."
 
 msgid "You cannot exclude yourself"
 msgstr "Du kannst dich nicht selbst ausschließen"
@@ -321,9 +358,15 @@ msgstr "Deine E-Mail-Adresse:"
 msgid "Your Secret Santa Assignment!"
 msgstr "Deine Wichtel-Zuteilung!"
 
-msgid "Your assignment exclusions have been saved."
-msgstr "Deine Ausschlüsse wurden gespeichert."
+msgid "Your preferences have been saved."
+msgstr "Deine Einstellungen wurden gespeichert."
 
 msgid "Your registered email:"
 msgstr "Deine registrierte E-Mail-Adresse:"
+
+msgid "e.g. board games, dark chocolate, crime novels"
+msgstr "z. B. Brettspiele, dunkle Schokolade, Krimis"
+
+msgid "e.g. scented candles, socks, anything with alcohol"
+msgstr "z. B. Duftkerzen, Socken, alles mit Alkohol"
 

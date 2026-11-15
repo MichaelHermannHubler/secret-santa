@@ -52,7 +52,8 @@ label {
 }
 
 input[type="text"],
-input[type="email"] {
+input[type="email"],
+textarea {
     width: 100%;
     padding: 10px;
     border: 2px solid #ddd;
@@ -62,7 +63,8 @@ input[type="email"] {
 }
 
 input[type="text"]:focus,
-input[type="email"]:focus {
+input[type="email"]:focus,
+textarea:focus {
     outline: none;
     border-color: #667eea;
 }
@@ -200,4 +202,26 @@ button[onclick="logout()"]:hover {
 .language-switcher a:hover,
 .language-switcher strong {
     opacity: 1;
+}
+
+textarea {
+    font-family: inherit;
+    resize: vertical;
+    min-height: 70px;
+}
+
+.hint {
+    color: #666;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.gift-wishes {
+    text-align: left;
+    margin-top: 15px;
+}
+
+.gift-wishes p {
+    white-space: pre-line;
+    margin: 4px 0 12px;
 }
